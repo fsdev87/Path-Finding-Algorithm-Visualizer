@@ -45,7 +45,7 @@ private:
 	vector<vector<Node>> maze;
 public:
 	Maze() {
-		layout = generateMaze();
+		layout = generateMazeRandom();
 		maze = convertMaze();
 	}
 	vector<vector<Node>> convertMaze() {
@@ -62,7 +62,12 @@ public:
 		}
 		return mapping;
 	}
-	vector<vector<char>> generateMaze() {
+
+	vector<vector<char>> generateMazeDFS() {
+		
+	}
+
+	vector<vector<char>> generateMazeRandom() {
 		srand(time(0)); // to generate random maze
 		// note: random maze generation is temporary we will change it to prim's algorithm soon
 
@@ -72,7 +77,7 @@ public:
 				if (i == 0 || j == 0 || i == layoutMap.size() - 1 || j == layoutMap[0].size() - 1) {
 					layoutMap[i][j] = '#';
 				}
-				/*else {
+				else {
 					int x = rand() % 4;
 					if (x == 0) {
 						layoutMap[i][j] = '#';
@@ -80,9 +85,6 @@ public:
 					else {
 						layoutMap[i][j] = ' ';
 					}
-				} this is random wall generation code */
-				if (i % 2 == 0 || j % 2 == 0) {
-					layoutMap[i][j] = '#';
 				}
 			}
 		}
