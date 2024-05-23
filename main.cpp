@@ -2,8 +2,8 @@
 #include <iostream>
 
 int main() {
-  Simulator sim;
-  sim.run();
-  // abdullah
-  return 0;
+	Simulator sim;
+	sim.run();
+	// Please read the issues and start work
+	return 0;
 }
