@@ -1,0 +1,36 @@
+# Visual Studio files
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+
+# Build results
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Dd]ebugPublic/
+[Rr]eleasePublic/
+[Dd]istrib/
+[Dd]b[Bb]/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Temporary files
+*.tmp
+*.temp
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.gen.cpp
+*.generated.h
+
+# Solution
+PathFinder.sln
+PathFinder.vcxproj
