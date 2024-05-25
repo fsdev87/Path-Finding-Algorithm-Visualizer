@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "Globals.h"
+#include "MazeGeneration.h"
 using namespace sf;
 using namespace std;
 
@@ -45,7 +46,7 @@ private:
 	vector<vector<Node>> maze;
 public:
 	Maze() {
-		layout = generateMazeDFS();
+		layout = generateMaze(1);
 		maze = convertMaze();
 	}
 	vector<vector<Node>> convertMaze() {
@@ -63,20 +64,14 @@ public:
 		return mapping;
 	}
 
-	vector<vector<char>> generateMazeDFS() {
+	vector<vector<char>> generateMaze(int choice) {
 		vector<vector<char>> layoutMap(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
-		for (int i = 0; i < layoutMap.size(); i++) {
-			for (int j = 0; j < layoutMap[0].size(); j++) {
-				if (i == 0 || j == 0 || i == layoutMap.size() - 1 || j == layoutMap[0].size() - 1) {
-					layoutMap[i][j] = '#';
-				}
-				if (i % 2 == 0 || j % 2 == 0) {
-					layoutMap[i][j] = '#';
-				}
-			}
+		if (choice == 1) {
+			MazeGenerationAlgorithms::generateMazeDFS(layoutMap);
 		}
-
-
+		else if (choice == 2) {
+			// TO_DO
+		}
 		return layoutMap;
 	}
 
