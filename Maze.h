@@ -37,6 +37,7 @@ struct Node {
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
 		inner.setPosition(outer.getPosition().x + 2, outer.getPosition().y + 2);
 
+
 		window.draw(outer);
 		window.draw(inner);
 	}

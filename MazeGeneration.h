@@ -38,6 +38,22 @@ namespace MazeGenerationAlgorithms {
 					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
 			}
 
+			vector<Cell> getAdjCells(Cell& cell, bool visited[][MAZE_WIDTH]) {
+				Cell up = Cell(cell.i - 2, cell.j);
+				Cell down = Cell(cell.i + 2, cell.j);
+				Cell left = Cell(cell.i, cell.j - 2);
+				Cell right = Cell(cell.i, cell.j + 2);
+
+				vector<Cell> cells;
+				if (isValidCell(up) && !visited[up.i][up.j]) cells.push_back(up);
+				if (isValidCell(down) && !visited[down.i][down.j]) cells.push_back(down);
+				if (isValidCell(left) && !visited[left.i][left.j]) cells.push_back(left);
+				if (isValidCell(right) && !visited[right.i][right.j]) cells.push_back(right);
+
+				return cells;
+			}
+
+
 		public:
 
 			static void generateMaze(vector<vector<char>>& maze) {
@@ -55,7 +71,9 @@ namespace MazeGenerationAlgorithms {
 					}
 				}
 
+				bool visited[MAZE_HEIGHT][MAZE_WIDTH]{};
 				
+
 			}
 		};
 
