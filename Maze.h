@@ -4,8 +4,10 @@
 #include <vector>
 #include "Globals.h"
 #include "MazeGeneration.h"
+
 using namespace sf;
 using namespace std;
+using namespace MazeGenerationAlgorithms;
 
 enum Tile {
 	Wall,
@@ -67,7 +69,7 @@ public:
 	vector<vector<char>> generateMaze(int choice) {
 		vector<vector<char>> layoutMap(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
 		if (choice == 1) {
-			MazeGenerationAlgorithms::Algorithms::generateMazeDFS(layoutMap);
+			Algorithms::generateMazeDFS(layoutMap);
 		}
 		else if (choice == 2) {
 			// TO_DO

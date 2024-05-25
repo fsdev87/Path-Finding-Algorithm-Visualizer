@@ -1,7 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 #include <stdlib.h>
+#include "Globals.h"
 
 using namespace std;
 
@@ -25,8 +27,23 @@ namespace MazeGenerationAlgorithms {
 
 	private:
 		class DFS {
+		private:
+			struct Cell {
+				int i, j;
+				Cell(int i, int j) : i(i), j(j) {}
+			};
+
+			bool isValidCell(Cell& cell) {
+				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
+					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
+			}
+
 		public:
+
 			static void generateMaze(vector<vector<char>>& maze) {
+				stack<Cell> st;
+				srand(time(NULL));
+
 				for (int i = 0; i < maze.size(); i++) {
 					for (int j = 0; j < maze[0].size(); j++) {
 						if (i == 0 || j == 0 || i == maze.size() - 1 || j == maze[0].size() - 1) {
@@ -37,10 +54,14 @@ namespace MazeGenerationAlgorithms {
 						}
 					}
 				}
+
+				
 			}
 		};
 
 		class Prims {
+		private:
+
 		public:
 			static void generateMaze(vector<vector<char>>& maze) {
 
