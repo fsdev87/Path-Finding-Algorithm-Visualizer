@@ -67,7 +67,7 @@ public:
 	vector<vector<char>> generateMaze(int choice) {
 		vector<vector<char>> layoutMap(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
 		if (choice == 1) {
-			MazeGenerationAlgorithms::generateMazeDFS(layoutMap);
+			MazeGenerationAlgorithms::Algorithms::generateMazeDFS(layoutMap);
 		}
 		else if (choice == 2) {
 			// TO_DO
