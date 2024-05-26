@@ -38,6 +38,11 @@ namespace MazeGenerationAlgorithms {
 					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
 			}
 
+			Cell generateRandomCell() {
+				Cell result();
+
+			}
+
 			vector<Cell> getAdjCells(Cell& cell, bool visited[][MAZE_WIDTH]) {
 				Cell up = Cell(cell.i - 2, cell.j);
 				Cell down = Cell(cell.i + 2, cell.j);
