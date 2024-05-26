@@ -39,8 +39,9 @@ namespace MazeGenerationAlgorithms {
 			}
 
 			Cell generateRandomCell() {
-				Cell result();
-
+				srand(time(NULL));
+				Cell result(-1, -1);
+				
 			}
 
 			vector<Cell> getAdjCells(Cell& cell, bool visited[][MAZE_WIDTH]) {
