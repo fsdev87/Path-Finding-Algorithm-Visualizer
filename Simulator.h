@@ -7,10 +7,12 @@ using namespace sf;
 class Simulator {
 private:
     Maze maze;
+    RenderWindow window;
 public:
-	Simulator() {}
+	Simulator():window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Path Finder Simulator 2D") {
+        window.setFramerateLimit(60);
+    }
 	void run() {
-        RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Path Finder Simulator 2D");
 
         while (window.isOpen())
         {
