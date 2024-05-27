@@ -4,6 +4,5 @@
 int main() {
 	Simulator sim;
 	sim.run();
-	// Please read the issues and start work
 	return 0;
 }

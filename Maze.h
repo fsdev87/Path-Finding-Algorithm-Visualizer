@@ -11,7 +11,8 @@ using namespace MazeGenerationAlgorithms;
 
 enum Tile {
 	Wall,
-	Cell
+	Cell,
+	CurrentCell
 };
 
 struct Node {
@@ -30,8 +31,11 @@ struct Node {
 		if (type == Wall) {
 			inner.setFillColor(Color::White);
 		}
-		else {
+		else if (type == Cell) {
 			inner.setFillColor(Color::Black);
+		}
+		else if (type == CurrentCell) {
+			inner.setFillColor(Color::Blue);
 		}
 
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
@@ -62,6 +66,9 @@ public:
 				}
 				else if (layout[i][j] == '#') {
 					mapping[i][j].type = Wall;
+				}
+				else if (layout[i][j] == 'C') {
+					mapping[i][j].type = CurrentCell;
 				}
 			}
 		}

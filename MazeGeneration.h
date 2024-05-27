@@ -10,7 +10,7 @@ using namespace std;
 
 // here add the maze generation algorithms
 /*
-1. DFS
+1. DFS -> Done
 2. Prim's
 3. Kruskal
 */
@@ -23,7 +23,7 @@ namespace MazeGenerationAlgorithms {
 		}
 
 		void generateMazePrims(vector<vector<char>>& maze) {
-			prims.generateMaze(maze);
+			prims.updateMaze(maze);
 		}
 
 	
@@ -34,13 +34,13 @@ namespace MazeGenerationAlgorithms {
 			struct Cell {
 				int i, j;
 				Cell(int i, int j) : i(i), j(j) {}
+				Cell(): i(0), j(0) {}
 			};
 
 			bool initialized;
 			stack<Cell> st;
+			Cell prevCell;
 			bool visited[MAZE_HEIGHT][MAZE_WIDTH];
-
-			
 
 			bool isValidCell(Cell& cell) {
 				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
@@ -108,6 +108,10 @@ namespace MazeGenerationAlgorithms {
 				if (st.empty()) return;
 
 				Cell current = st.top();
+				maze[current.i][current.j] = 'C';
+				
+				if (prevCell.i != 0 && prevCell.j != 0) maze[prevCell.i][prevCell.j] = ' ';
+				
 				st.pop();
 				vector<Cell> adjacentCells = getAdjCells(current, visited);
 				if (adjacentCells.size() > 0) { // this means valid neighbors exist
@@ -131,6 +135,7 @@ namespace MazeGenerationAlgorithms {
 					visited[selected.i][selected.j] = true;
 					st.push(selected);
 				}
+				prevCell = current;
 			}
 		};
 
@@ -139,7 +144,7 @@ namespace MazeGenerationAlgorithms {
 		private:
 
 		public:
-			void generateMaze(vector<vector<char>>& maze) {
+			void updateMaze(vector<vector<char>>& maze) {
 
 			}
 		};
