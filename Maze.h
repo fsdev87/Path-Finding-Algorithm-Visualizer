@@ -47,10 +47,11 @@ class Maze {
 private:
 	vector<vector<char>> layout;
 	vector<vector<Node>> maze;
+
+	Algorithms algorithms;
 public:
 	Maze() {
-		layout = generateMaze(1);
-		maze = convertMaze();
+		layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));
@@ -67,15 +68,13 @@ public:
 		return mapping;
 	}
 
-	vector<vector<char>> generateMaze(int choice) {
-		vector<vector<char>> layoutMap(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
+	void generateMaze(int choice) {
 		if (choice == 1) {
-			Algorithms::generateMazeDFS(layoutMap);
+			algorithms.generateMazeDFS(layout);
 		}
 		else if (choice == 2) {
 			// TO_DO
 		}
-		return layoutMap;
 	}
 
 	vector<vector<char>> generateMazeRandom() {
@@ -104,6 +103,9 @@ public:
 	}
 
 	void draw(RenderWindow& window) {
+		generateMaze(1);
+		maze = convertMaze();
+
 		for (int i = 0; i < maze.size(); i++) {
 			for (int j = 0; j < maze[0].size(); j++) {
 				maze[i][j].draw(window, j, i);

@@ -3,6 +3,7 @@
 #include <vector>
 #include <stack>
 #include <stdlib.h>
+#include <iostream>
 #include "Globals.h"
 
 using namespace std;
@@ -17,13 +18,15 @@ using namespace std;
 namespace MazeGenerationAlgorithms {
 	class Algorithms {
 	public:
-		static void generateMazeDFS(vector<vector<char>>& maze) {
-			DFS::generateMaze(maze);
+		void generateMazeDFS(vector<vector<char>>& maze) {
+			dfs.updateMaze(maze);
 		}
 
-		static void generateMazePrims(vector<vector<char>>& maze) {
-			Prims::generateMaze(maze);
+		void generateMazePrims(vector<vector<char>>& maze) {
+			prims.generateMaze(maze);
 		}
+
+	
 
 	private:
 		class DFS {
@@ -33,12 +36,18 @@ namespace MazeGenerationAlgorithms {
 				Cell(int i, int j) : i(i), j(j) {}
 			};
 
-			static bool isValidCell(Cell& cell) {
+			bool initialized;
+			stack<Cell> st;
+			bool visited[MAZE_HEIGHT][MAZE_WIDTH];
+
+			
+
+			bool isValidCell(Cell& cell) {
 				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
 					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
 			}
 
-			static Cell generateRandomCell(vector<vector<char>>& maze) {
+			Cell generateRandomCell(vector<vector<char>>& maze) {
 				srand(time(NULL));
 				Cell result(-1, -1);
 				result.i = 1 + rand() % (MAZE_HEIGHT - 1);
@@ -50,7 +59,7 @@ namespace MazeGenerationAlgorithms {
 				return result;
 			}
 
-			static vector<Cell> getAdjCells(Cell& cell, bool visited[][MAZE_WIDTH]) {
+			vector<Cell> getAdjCells(Cell& cell, bool visited[][MAZE_WIDTH]) {
 				Cell up = Cell(cell.i - 2, cell.j);
 				Cell down = Cell(cell.i + 2, cell.j);
 				Cell left = Cell(cell.i, cell.j - 2);
@@ -65,11 +74,7 @@ namespace MazeGenerationAlgorithms {
 				return cells;
 			}
 
-
-		public:
-
-			static void generateMaze(vector<vector<char>>& maze) {
-				stack<Cell> st;
+			void initialize(vector<vector<char>>& maze) {
 				srand(time(NULL));
 
 				for (int i = 0; i < maze.size(); i++) {
@@ -82,48 +87,66 @@ namespace MazeGenerationAlgorithms {
 						}
 					}
 				}
-
-				bool visited[MAZE_HEIGHT][MAZE_WIDTH]{};
 				Cell start = generateRandomCell(maze);
 				visited[start.i][start.j] = true;
 				st.push(start);
-				while (!st.empty()) {
-					Cell current = st.top();
-					st.pop();
-					vector<Cell> adjacentCells = getAdjCells(current, visited);
-					if (adjacentCells.size() > 0) { // this means valid neighbors exist
-						st.push(current);
-						int choice = rand() % adjacentCells.size();
-						Cell selected = adjacentCells[choice];
-						int dx = selected.j - current.j;
-						int dy = selected.i - current.i;
-						if (dy == 0 && dx > 0) { // the right cell
-							maze[current.i][current.j + 1] = ' ';
-						}
-						else if (dy > 0 && dx == 0) { // the down cell
-							maze[current.i + 1][current.j] = ' ';
-						}
-						else if (dy < 0 && dx == 0) { // the up cell
-							maze[current.i - 1][current.j] = ' ';
-						}
-						else if (dy == 0 && dx < 0) { // the left cell
-							maze[current.i][current.j - 1] = ' ';
-						}
-						visited[selected.i][selected.j] = true;
-						st.push(selected);
+				initialized = true;
+			}
+
+		public:
+			DFS() {
+				initialized = false;
+				for (int i = 0; i < MAZE_HEIGHT; i++) {
+					for (int j = 0; j < MAZE_WIDTH; j++) {
+						visited[i][j] = false;
 					}
 				}
 			}
+
+			void updateMaze(vector<vector<char>>& maze) {
+				if (!initialized) initialize(maze);
+				if (st.empty()) return;
+
+				Cell current = st.top();
+				st.pop();
+				vector<Cell> adjacentCells = getAdjCells(current, visited);
+				if (adjacentCells.size() > 0) { // this means valid neighbors exist
+					st.push(current);
+					int choice = rand() % adjacentCells.size();
+					Cell selected = adjacentCells[choice];
+					int dx = selected.j - current.j;
+					int dy = selected.i - current.i;
+					if (dy == 0 && dx > 0) { // the right cell
+						maze[current.i][current.j + 1] = ' ';
+					}
+					else if (dy > 0 && dx == 0) { // the down cell
+						maze[current.i + 1][current.j] = ' ';
+					}
+					else if (dy < 0 && dx == 0) { // the up cell
+						maze[current.i - 1][current.j] = ' ';
+					}
+					else if (dy == 0 && dx < 0) { // the left cell
+						maze[current.i][current.j - 1] = ' ';
+					}
+					visited[selected.i][selected.j] = true;
+					st.push(selected);
+				}
+			}
 		};
+
 
 		class Prims {
 		private:
 
 		public:
-			static void generateMaze(vector<vector<char>>& maze) {
+			void generateMaze(vector<vector<char>>& maze) {
 
 			}
 		};
+
+		private:
+			DFS dfs;
+			Prims prims;
 
 		// add more algorithms and so on
 	};
