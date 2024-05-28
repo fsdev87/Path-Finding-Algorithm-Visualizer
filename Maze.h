@@ -80,7 +80,10 @@ public:
 			algorithms.generateMazeDFS(layout);
 		}
 		else if (choice == 2) {
-			// TO_DO
+			algorithms.generateMazePrims(layout);
+		}
+		else if (choice == 3) {
+			// TO DO
 		}
 	}
 

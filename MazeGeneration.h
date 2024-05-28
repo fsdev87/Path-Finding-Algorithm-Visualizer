@@ -26,7 +26,6 @@ namespace MazeGenerationAlgorithms {
 			prims.updateMaze(maze);
 		}
 
-	
 
 	private:
 		class DFS {
@@ -105,7 +104,12 @@ namespace MazeGenerationAlgorithms {
 
 			void updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
-				if (st.empty()) return;
+				if (st.empty()) {
+					//maze[prevCell.i][prevCell.j] = ' ';
+					
+					// the above line removes the cursor
+					return;
+				}
 
 				Cell current = st.top();
 				maze[current.i][current.j] = 'C';

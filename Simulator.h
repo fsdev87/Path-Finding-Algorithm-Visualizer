@@ -10,7 +10,7 @@ private:
     RenderWindow window;
 public:
 	Simulator():window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Path Finder Simulator 2D") {
-        window.setFramerateLimit(60);
+        window.setFramerateLimit(30);
     }
 	void run() {
 
