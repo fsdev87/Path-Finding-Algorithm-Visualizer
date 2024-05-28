@@ -147,9 +147,116 @@ namespace MazeGenerationAlgorithms {
 		class Prims {
 		private:
 
-		public:
-			void updateMaze(vector<vector<char>>& maze) {
+			struct Cell {
+				int i, j;
+				Cell(int i, int j) : i(i), j(j) {}
+				Cell() : i(0), j(0) {}
+			};
 
+			bool initialized;
+			vector<Cell> frontierCells;
+			Cell current;
+
+			bool isValid(Cell& cell) {
+				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
+					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
+			}
+
+
+			Cell generateRandomCell(vector<vector<char>>& maze) {
+				srand(time(NULL));
+				Cell result(-1, -1);
+				result.i = 1 + rand() % (MAZE_HEIGHT - 1);
+				result.j = 1 + rand() % (MAZE_WIDTH - 1);
+				while (result.i % 2 == 0 || result.j % 2 == 0) {
+					result.i = 1 + rand() % (MAZE_HEIGHT - 1);
+					result.j = 1 + rand() % (MAZE_WIDTH - 1);
+				}
+				return result;
+			}
+
+			vector<Cell> computeFrontierCells(Cell& cell, vector<vector<char>>& maze) {
+				Cell up = Cell(cell.i - 2, cell.j);
+				Cell down = Cell(cell.i + 2, cell.j);
+				Cell left = Cell(cell.i, cell.j - 2);
+				Cell right = Cell(cell.i, cell.j + 2);
+				
+				vector<Cell> cells;
+				if (isValid(up) && maze[up.i][up.j] == '#') cells.push_back(up);
+				if (isValid(down) && maze[down.i][down.j] == '#') cells.push_back(down);
+				if (isValid(left) && maze[left.i][left.j] == '#') cells.push_back(left);
+				if (isValid(right) && maze[right.i][right.j] == '#') cells.push_back(right);
+
+				return cells;
+			}
+
+			Cell getConnectingCell(Cell& frontier, vector<vector<char>>& maze) {
+				Cell up = Cell(frontier.i - 2, frontier.j);
+				Cell down = Cell(frontier.i + 2, frontier.j);
+				Cell left = Cell(frontier.i, frontier.j - 2);
+				Cell right = Cell(frontier.i, frontier.j + 2);
+
+				if (isValid(left) && maze[left.i][left.j] == ' ') return left;
+				if (isValid(up) && maze[up.i][up.j] == ' ') return up;
+				if (isValid(down) && maze[down.i][down.j] == ' ') return down;
+				if (isValid(right) && maze[right.i][right.j] == ' ') return right;
+
+				return Cell();
+			}
+
+			void initialize(vector<vector<char>>& maze) {
+				srand(time(NULL));
+
+				for (int i = 0; i < maze.size(); i++) {
+					for (int j = 0; j < maze[0].size(); j++) {
+						maze[i][j] = '#';
+					}
+				}
+				Cell start = generateRandomCell(maze);
+				maze[start.i][start.j] = ' ';
+				vector<Cell> frontiers = computeFrontierCells(start, maze);
+				frontierCells.insert(frontierCells.end(), frontiers.begin(), frontiers.end());
+				initialized = true;
+				current = start;
+			}
+
+		public:
+			Prims() {
+				initialized = false;
+			}
+
+			void updateMaze(vector<vector<char>>& maze) {
+				if (!initialized) initialize(maze);
+				if (frontierCells.empty()) {
+					//maze[prevCell.i][prevCell.j] = ' ';
+
+					// the above line removes the cursor
+					cout << "here" << endl;
+					return;
+				}
+
+				int choice = rand() % frontierCells.size();
+				Cell currentFrontier = frontierCells[choice];
+				Cell connectedCell = getConnectingCell(currentFrontier, maze);
+				int dx = currentFrontier.j - connectedCell.j;
+				int dy = currentFrontier.i - connectedCell.i;
+				if (dy == 0 && dx > 0) { // the right cell
+					maze[currentFrontier.i][currentFrontier.j - 1] = ' ';
+				}
+				else if (dy > 0 && dx == 0) { // the down cell
+					maze[currentFrontier.i - 1][currentFrontier.j] = ' ';
+				}
+				else if (dy < 0 && dx == 0) { // the up cell
+					maze[currentFrontier.i + 1][currentFrontier.j] = ' ';
+				}
+				else if (dy == 0 && dx < 0) { // the left cell
+					maze[currentFrontier.i][currentFrontier.j + 1] = ' ';
+				}
+				maze[currentFrontier.i][currentFrontier.j] = ' ';
+
+				vector<Cell> frontiers = computeFrontierCells(currentFrontier, maze);
+				frontierCells.erase(frontierCells.begin() + choice);
+				frontierCells.insert(frontierCells.end(), frontiers.begin(), frontiers.end());
 			}
 		};
 
