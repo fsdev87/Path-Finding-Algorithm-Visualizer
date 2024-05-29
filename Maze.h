@@ -83,7 +83,7 @@ public:
 			algorithms.generateMazePrims(layout);
 		}
 		else if (choice == 3) {
-			// TO DO
+			algorithms.generateMazeKruskals(layout);
 		}
 	}
 

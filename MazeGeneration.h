@@ -26,6 +26,10 @@ namespace MazeGenerationAlgorithms {
 			prims.updateMaze(maze);
 		}
 
+		void generateMazeKruskals(vector<vector<char>>& maze) {
+			kruskals.updateMaze(maze);
+		}
+
 
 	private:
 		class DFS {
@@ -142,7 +146,6 @@ namespace MazeGenerationAlgorithms {
 				prevCell = current;
 			}
 		};
-
 
 		class Prims {
 		private:
@@ -272,9 +275,23 @@ namespace MazeGenerationAlgorithms {
 			}
 		};
 
+		class Kruskals {
+		private:
+
+		public:
+			Kruskals() {
+
+			}
+
+			void updateMaze(vector<vector<char>>& maze) {
+
+			}
+		};
+
 		private:
 			DFS dfs;
 			Prims prims;
+			Kruskals kruskals;
 
 		// add more algorithms and so on
 	};
