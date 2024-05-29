@@ -67,7 +67,7 @@ public:
 				else if (layout[i][j] == '#') {
 					mapping[i][j].type = Wall;
 				}
-				else if (layout[i][j] == 'C') {
+				else if (layout[i][j] == 'C' || layout[i][j] == 'F') {
 					mapping[i][j].type = CurrentCell;
 				}
 			}

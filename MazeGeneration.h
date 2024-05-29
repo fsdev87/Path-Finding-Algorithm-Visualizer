@@ -187,21 +187,31 @@ namespace MazeGenerationAlgorithms {
 				if (isValid(left) && maze[left.i][left.j] == '#') cells.push_back(left);
 				if (isValid(right) && maze[right.i][right.j] == '#') cells.push_back(right);
 
+				for (Cell& c : cells) {
+					maze[c.i][c.j] = 'F'; // mark it as frontier cell
+				}
+
 				return cells;
 			}
 
 			Cell getConnectingCell(Cell& frontier, vector<vector<char>>& maze) {
+				vector<Cell> connections;
+
 				Cell up = Cell(frontier.i - 2, frontier.j);
 				Cell down = Cell(frontier.i + 2, frontier.j);
 				Cell left = Cell(frontier.i, frontier.j - 2);
 				Cell right = Cell(frontier.i, frontier.j + 2);
 
-				if (isValid(left) && maze[left.i][left.j] == ' ') return left;
-				if (isValid(up) && maze[up.i][up.j] == ' ') return up;
-				if (isValid(down) && maze[down.i][down.j] == ' ') return down;
-				if (isValid(right) && maze[right.i][right.j] == ' ') return right;
+				if (isValid(up) && maze[up.i][up.j] == ' ') connections.push_back(up);
+				if (isValid(down) && maze[down.i][down.j] == ' ') connections.push_back(down);
+				if (isValid(left) && maze[left.i][left.j] == ' ') connections.push_back(left);
+				if (isValid(right) && maze[right.i][right.j] == ' ') connections.push_back(right);
 
-				return Cell();
+				if (!connections.empty()) {
+					return connections[rand() % connections.size()];
+				}
+
+				return Cell();  // Return invalid cell if no valid connections found
 			}
 
 			void initialize(vector<vector<char>>& maze) {
@@ -228,28 +238,30 @@ namespace MazeGenerationAlgorithms {
 			void updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
 				if (frontierCells.empty()) {
-					//maze[prevCell.i][prevCell.j] = ' ';
-
-					// the above line removes the cursor
-					cout << "here" << endl;
 					return;
 				}
 
 				int choice = rand() % frontierCells.size();
 				Cell currentFrontier = frontierCells[choice];
+
 				Cell connectedCell = getConnectingCell(currentFrontier, maze);
+				if (connectedCell.i == 0 && connectedCell.j == 0) {
+					frontierCells.erase(frontierCells.begin() + choice);
+					return;
+				}
+
 				int dx = currentFrontier.j - connectedCell.j;
 				int dy = currentFrontier.i - connectedCell.i;
-				if (dy == 0 && dx > 0) { // the right cell
+				if (dy == 0 && dx > 0) {  // the right cell
 					maze[currentFrontier.i][currentFrontier.j - 1] = ' ';
 				}
-				else if (dy > 0 && dx == 0) { // the down cell
+				else if (dy > 0 && dx == 0) {  // the down cell
 					maze[currentFrontier.i - 1][currentFrontier.j] = ' ';
 				}
-				else if (dy < 0 && dx == 0) { // the up cell
+				else if (dy < 0 && dx == 0) {  // the up cell
 					maze[currentFrontier.i + 1][currentFrontier.j] = ' ';
 				}
-				else if (dy == 0 && dx < 0) { // the left cell
+				else if (dy == 0 && dx < 0) {  // the left cell
 					maze[currentFrontier.i][currentFrontier.j + 1] = ' ';
 				}
 				maze[currentFrontier.i][currentFrontier.j] = ' ';
