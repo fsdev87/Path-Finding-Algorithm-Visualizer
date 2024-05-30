@@ -2,7 +2,9 @@
 #include <iostream>
 
 int main() {
-	Simulator sim;
-	sim.run();
+	/*Simulator sim;
+	sim.run();*/
+
+	cout << "hello world" << endl;
 	return 0;
 }
