@@ -87,30 +87,6 @@ public:
 		}
 	}
 
-	vector<vector<char>> generateMazeRandom() {
-		srand(time(0)); // to generate random maze
-		// note: random maze generation is temporary we will change it to prim's algorithm soon
-
-		vector<vector<char>> layoutMap(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
-		for (int i = 0; i < layoutMap.size(); i++) {
-			for (int j = 0; j < layoutMap[0].size(); j++) {
-				if (i == 0 || j == 0 || i == layoutMap.size() - 1 || j == layoutMap[0].size() - 1) {
-					layoutMap[i][j] = '#';
-				}
-				else {
-					int x = rand() % 4;
-					if (x == 0) {
-						layoutMap[i][j] = '#';
-					}
-					else {
-						layoutMap[i][j] = ' ';
-					}
-				}
-			}
-		}
-
-		return layoutMap;
-	}
 
 	void draw(RenderWindow& window) {
 		generateMaze(2);
