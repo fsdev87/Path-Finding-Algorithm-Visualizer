@@ -57,6 +57,9 @@ int main() {
         std::cout << "CELL(43, 3) is not in the set" << std::endl;
     }
 
+
+    // to merge two cells
+    // cell.insert(cell.begin(), cell.end())
     return 0;
 }
 
