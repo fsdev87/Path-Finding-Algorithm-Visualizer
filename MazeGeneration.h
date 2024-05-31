@@ -4,6 +4,7 @@
 #include <stack>
 #include <stdlib.h>
 #include <iostream>
+#include <unordered_set>
 #include "Globals.h"
 
 using namespace std;
@@ -277,10 +278,41 @@ namespace MazeGenerationAlgorithms {
 
 		class Kruskals {
 		private:
+			struct Cell {
+				int x, y;
+				Cell(int x_val, int y_val) : x(x_val), y(y_val) {}
+				bool operator==(const Cell& other) const {
+					return x == other.x && y == other.y;
+				}
+			};
+			struct CellHash {
+				std::size_t operator()(const Cell& cell) const {
+					std::size_t h1 = std::hash<int>()(cell.x);
+					std::size_t h2 = std::hash<int>()(cell.y);
+					return h1 ^ (h2 << 1); 
+				}
+			};
+			struct CellEqual {
+				bool operator()(const Cell& lhs, const Cell& rhs) const {
+					return lhs.x == rhs.x && lhs.y == rhs.y;
+				}
+			};
+
+			vector<unordered_set<Cell, CellHash, CellEqual>> cellSets;
+			vector<Cell> walls;
+			bool initialized;
+
+			void findAndJoinSets(Cell& wall) {
+
+			}
+
+			void initialize() {
+
+			}
 
 		public:
 			Kruskals() {
-
+				initialized = false;
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
