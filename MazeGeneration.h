@@ -301,22 +301,53 @@ namespace MazeGenerationAlgorithms {
 			vector<unordered_set<Cell, CellHash, CellEqual>> cellSets;
 			vector<Cell> walls;
 			bool initialized;
+			int totalCells;
+			int removedWalls;
 
-			void findAndJoinSets(Cell& wall) {
-
+			bool findAndJoinSets(Cell& wall) {
+				
 			}
 
-			void initialize() {
+			void initialize(vector<vector<char>>& maze) {
+				srand(time(NULL));
 
+				for (int i = 0; i < maze.size(); i++) {
+					for (int j = 0; j < maze[0].size(); j++) {
+						if (i == 0 || j == 0 || i == maze.size() - 1 || j == maze[0].size() - 1) {
+							maze[i][j] = '#';
+						}
+						else if (i % 2 == 0 || j % 2 == 0) {
+							maze[i][j] = '#';
+							if (!(i % 2 == 0) || !(j % 2 == 0)) {
+								walls.push_back(Cell(i, j));
+							}
+						}
+						else {
+							totalCells++;
+						}
+					}
+				}
+				initialized = true;
 			}
 
 		public:
 			Kruskals() {
 				initialized = false;
+				removedWalls = 0;
+				totalCells = 0;
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
+				if (!initialized) initialize(maze);
+				if (removedWalls >= (totalCells - 1)) return;
 
+				int x = rand() % walls.size();
+				Cell chosenWall = walls[x];
+				if (findAndJoinSets(chosenWall)) {
+					maze[chosenWall.x][chosenWall.y] = ' ';
+					walls.erase(walls.begin() + x);
+					removedWalls++;
+				}
 			}
 		};
 
