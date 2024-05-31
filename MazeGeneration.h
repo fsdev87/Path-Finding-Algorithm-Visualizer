@@ -298,7 +298,7 @@ namespace MazeGenerationAlgorithms {
 				}
 			};
 
-			vector<unordered_set<Cell, CellHash, CellEqual>> cellSets;
+			vector<unordered_set<Cell, CellHash, CellEqual>> CellSets;
 			vector<Cell> walls;
 			bool initialized;
 			int totalCells;
@@ -309,7 +309,38 @@ namespace MazeGenerationAlgorithms {
 					&& cell.y >= 1 && cell.y < (MAZE_WIDTH - 1);
 			}
 
-			bool findAndJoinSets(Cell& wall) {
+			bool findAndJoinSets(Cell& cell1, Cell& cell2) {
+				// Find the sets containing cell1 and cell2
+				auto set1Iter = CellSets.end();
+				auto set2Iter = CellSets.end();
+
+				for (auto it = CellSets.begin(); it != CellSets.end(); ++it) {
+					if (it->find(cell1) != it->end()) {
+						set1Iter = it;
+					}
+					if (it->find(cell2) != it->end()) {
+						set2Iter = it;
+					}
+					if (set1Iter != CellSets.end() && set2Iter != CellSets.end()) {
+						break;  // Both sets found
+					}
+				}
+
+				// Check if they are in different sets
+				if (set1Iter != set2Iter) {
+					// Join the sets
+					if (set1Iter != CellSets.end() && set2Iter != CellSets.end()) {
+						set1Iter->insert(set2Iter->begin(), set2Iter->end());
+						CellSets.erase(set2Iter);
+					}
+					return true;
+				}
+
+				// Both cells are in the same set
+				return false;
+			}
+
+			bool relaxation(Cell& wall) {
 				Cell up = Cell(wall.x - 1, wall.y);
 				Cell down = Cell(wall.x + 1, wall.y);
 				Cell left = Cell(wall.x, wall.y - 1);
@@ -318,19 +349,26 @@ namespace MazeGenerationAlgorithms {
 				int verticalFirst = rand() % 2;
 				if (verticalFirst) {
 					if (isValidCell(up) && isValidCell(down)) {
-						// check if these cells are in different sets. if they are then join the sets of the cells and return true
-
+						if (findAndJoinSets(up, down)) {
+							return true;
+						}
 					}
 					if (isValidCell(left) && isValidCell(right)) {
-
+						if (findAndJoinSets(left, right)) {
+							return true;
+						}
 					}
 				}
 				else {
 					if (isValidCell(left) && isValidCell(right)) {
-
+						if (findAndJoinSets(left, right)) {
+							return true;
+						}
 					}
 					if (isValidCell(down) && isValidCell(up)) {
-
+						if (findAndJoinSets(up, down)) {
+							return true;
+						}
 					}
 				}
 
@@ -353,6 +391,8 @@ namespace MazeGenerationAlgorithms {
 						}
 						else {
 							totalCells++;
+							unordered_set<Cell, CellHash, CellEqual> newSet = { Cell(i, j) };
+							CellSets.push_back(newSet);
 						}
 					}
 				}
@@ -372,7 +412,7 @@ namespace MazeGenerationAlgorithms {
 
 				int x = rand() % walls.size();
 				Cell chosenWall = walls[x];
-				if (findAndJoinSets(chosenWall)) {
+				if (relaxation(chosenWall)) {
 					maze[chosenWall.x][chosenWall.y] = ' ';
 					walls.erase(walls.begin() + x);
 					removedWalls++;
