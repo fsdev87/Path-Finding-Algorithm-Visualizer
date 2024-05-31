@@ -304,8 +304,37 @@ namespace MazeGenerationAlgorithms {
 			int totalCells;
 			int removedWalls;
 
+			bool isValidCell(Cell& cell) {
+				return cell.x >= 1 && cell.x < (MAZE_HEIGHT - 1)
+					&& cell.y >= 1 && cell.y < (MAZE_WIDTH - 1);
+			}
+
 			bool findAndJoinSets(Cell& wall) {
-				
+				Cell up = Cell(wall.x - 1, wall.y);
+				Cell down = Cell(wall.x + 1, wall.y);
+				Cell left = Cell(wall.x, wall.y - 1);
+				Cell right = Cell(wall.x, wall.y + 1);
+
+				int verticalFirst = rand() % 2;
+				if (verticalFirst) {
+					if (isValidCell(up) && isValidCell(down)) {
+						// check if these cells are in different sets. if they are then join the sets of the cells and return true
+
+					}
+					if (isValidCell(left) && isValidCell(right)) {
+
+					}
+				}
+				else {
+					if (isValidCell(left) && isValidCell(right)) {
+
+					}
+					if (isValidCell(down) && isValidCell(up)) {
+
+					}
+				}
+
+				return false;
 			}
 
 			void initialize(vector<vector<char>>& maze) {
