@@ -24,18 +24,18 @@ struct Node {
 	// functions here
 	void draw(RenderWindow& window, int xPos, int yPos) {
 		RectangleShape outer, inner;
-		outer.setFillColor(Color::Black);
+		outer.setFillColor(Color(0x0e, 0x19, 0x1f));
 		outer.setSize(Vector2f(TILE_SIZE, TILE_SIZE));
 		outer.setPosition(xPos * TILE_SIZE, yPos * TILE_SIZE);
 
 		if (type == Wall) {
-			inner.setFillColor(Color::White);
+			inner.setFillColor(Color(0x00, 0x99, 0x99));
 		}
 		else if (type == Cell) {
-			inner.setFillColor(Color::Black);
+			inner.setFillColor(Color(0x0e, 0x19, 0x1f));
 		}
 		else if (type == CurrentCell) {
-			inner.setFillColor(Color::Blue);
+			inner.setFillColor(Color::White);
 		}
 
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
@@ -51,11 +51,13 @@ class Maze {
 private:
 	vector<vector<char>> layout;
 	vector<vector<Node>> maze;
-
 	Algorithms algorithms;
+
+	int choice;
 public:
 	Maze() {
 		layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
+		choice = 0;
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));
@@ -90,9 +92,21 @@ public:
 		}
 	}
 
+	void reset() {
+		algorithms.reset();
+		for (int i = 0; i < layout.size(); i++) {
+			for (int j = 0; j < layout[0].size(); j++) {
+				if (i == 0 || j == 0 || i == layout.size() - 1 || j == layout[0].size() - 1) {
+					layout[i][j] = '#';
+				}
+			}
+		}
+	}
 
 	void draw(RenderWindow& window) {
-		generateMaze(4);
+		if (choice != 0) generateMaze(choice);
+		else reset();
+
 		maze = convertMaze();
 
 		for (int i = 0; i < maze.size(); i++) {

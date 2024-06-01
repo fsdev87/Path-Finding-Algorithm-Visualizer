@@ -1,13 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Globals.h"
-#include "Maze.h"
+#include "Interface.h"
 using namespace sf;
 
 class Simulator {
 private:
-    Maze maze;
     RenderWindow window;
+    Interface interface;
 public:
 	Simulator():window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Path Finder Simulator 2D") {
         window.setFramerateLimit(30);
@@ -23,8 +23,8 @@ public:
                     window.close();
             }
 
-            window.clear();
-            maze.draw(window);
+            window.clear(Color(0x0e, 0x19, 0x1f));
+            interface.control(window);
             window.display();
         }
 	}

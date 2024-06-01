@@ -37,6 +37,12 @@ namespace MazeGenerationAlgorithms {
 			wilsons.updateMaze(maze);
 		}
 
+		void reset() {
+			dfs.reset();
+			prims.reset();
+			kruskals.reset();
+			wilsons.reset();
+		}
 
 	private:
 		class DFS {
@@ -110,6 +116,18 @@ namespace MazeGenerationAlgorithms {
 					for (int j = 0; j < MAZE_WIDTH; j++) {
 						visited[i][j] = false;
 					}
+				}
+			}
+
+			void reset() {
+				initialized = false;
+				for (int i = 0; i < MAZE_HEIGHT; i++) {
+					for (int j = 0; j < MAZE_WIDTH; j++) {
+						visited[i][j] = false;
+					}
+				}
+				while (!st.empty()) {
+					st.pop();
 				}
 			}
 
@@ -243,6 +261,11 @@ namespace MazeGenerationAlgorithms {
 		public:
 			Prims() {
 				initialized = false;
+			}
+
+			void reset() {
+				initialized = false;
+				frontierCells.clear();
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
@@ -410,6 +433,14 @@ namespace MazeGenerationAlgorithms {
 				initialized = false;
 				removedWalls = 0;
 				totalCells = 0;
+			}
+
+			void reset() {
+				initialized = false;
+				removedWalls = 0;
+				totalCells = 0;
+				walls.clear();
+				CellSets.clear();
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
@@ -591,6 +622,13 @@ namespace MazeGenerationAlgorithms {
 		public:
 			Wilsons() {
 				initialized = false;
+			}
+
+			void reset() {
+				initialized = false;
+				visited.clear();
+				unvisited.clear();
+				path.clear();
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
