@@ -92,7 +92,7 @@ public:
 
 
 	void draw(RenderWindow& window) {
-		generateMaze(2);
+		generateMaze(4);
 		maze = convertMaze();
 
 		for (int i = 0; i < maze.size(); i++) {

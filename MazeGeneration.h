@@ -457,7 +457,16 @@ namespace MazeGenerationAlgorithms {
 			
 			void initialize(vector<vector<char>>& maze) {
 				srand(time(NULL));
-
+				for (int i = 0; i < maze.size(); i++) {
+					for (int j = 0; j < maze[0].size(); j++) {
+						if (i == 0 || j == 0 || i == maze.size() - 1 || j == maze[0].size() - 1) {
+							maze[i][j] = '#';
+						}
+						else {
+							maze[i][j] = ' ';
+						}
+					}
+				}
 				
 				initialized = true;
 			}
@@ -468,7 +477,7 @@ namespace MazeGenerationAlgorithms {
 			}
 
 			void updateMaze(vector<vector<char>>& maze) {
-				
+				if (!initialized) initialize(maze);
 			}
 		};
 
