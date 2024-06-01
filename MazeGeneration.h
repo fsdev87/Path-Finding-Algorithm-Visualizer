@@ -4,7 +4,9 @@
 #include <stack>
 #include <stdlib.h>
 #include <iostream>
+#include <iterator>
 #include <unordered_set>
+#include <algorithm>
 #include "Globals.h"
 
 using namespace std;
@@ -429,6 +431,7 @@ namespace MazeGenerationAlgorithms {
 			struct Cell {
 				int x, y;
 				Cell(int x_val, int y_val) : x(x_val), y(y_val) {}
+				Cell() {}
 				bool operator==(const Cell& other) const {
 					return x == other.x && y == other.y;
 				}
@@ -447,27 +450,142 @@ namespace MazeGenerationAlgorithms {
 			};
 
 			bool initialized;
-			
+			unordered_set<Cell, CellHash, CellEqual> visited;
+			unordered_set<Cell, CellHash, CellEqual> unvisited;
+			vector<Cell> path;
 
-			bool isValidCell(Cell& cell) {
+			bool isValidCell(Cell cell) {
 				return cell.x >= 1 && cell.x < (MAZE_HEIGHT - 1)
 					&& cell.y >= 1 && cell.y < (MAZE_WIDTH - 1);
 			}
 
+			Cell generateRandomCell() {
+				srand(time(NULL));
+				Cell result(-1, -1);
+				result.x = 1 + rand() % (MAZE_HEIGHT - 1);
+				result.y = 1 + rand() % (MAZE_WIDTH - 1);
+				while (result.x % 2 == 0 || result.y % 2 == 0) {
+					result.x = 1 + rand() % (MAZE_HEIGHT - 1);
+					result.y = 1 + rand() % (MAZE_WIDTH - 1);
+				}
+				return result;
+			}
+
+			vector<Cell> possibleMoves(Cell& cell) {
+				Cell up = Cell(cell.x - 2, cell.y);
+				Cell down = Cell(cell.x + 2, cell.y);
+				Cell left = Cell(cell.x, cell.y - 2);
+				Cell right = Cell(cell.x, cell.y + 2);
+
+				vector<Cell> cells;
+				if (isValidCell(up)) cells.push_back(up);
+				if (isValidCell(down)) cells.push_back(down);
+				if (isValidCell(left)) cells.push_back(left);
+				if (isValidCell(right)) cells.push_back(right);
+
+				return cells;
+			}
+
+			char checkCellDir(Cell& current, Cell& next) { // check where the next cell is relative to current
+				int dx = current.y - next.y;
+				int dy = current.x - next.x;
+				if (dy == 0 && dx > 0) {  // the right cell
+					return 'r';
+				}
+				else if (dy > 0 && dx == 0) {  // the down cell
+					return 'd';
+				}
+				else if (dy < 0 && dx == 0) {  // the up cell
+					return 'u';
+				}
+				else if (dy == 0 && dx < 0) {  // the left cell
+					return 'l';
+				}
+			}
+
+			void eraseLoop(vector<vector<char>>& maze, Cell& intersectingCell) {
+				if (intersectingCell == path.back()) return;
+				Cell prev;
+				while (!(path.back() == intersectingCell)) {
+					maze[path.back().x][path.back().y] = '#';
+					prev = path.back();
+					path.pop_back();
+					int dir = checkCellDir(path.back(), prev);
+					switch (dir)
+					{
+					case 'r': maze[prev.x][prev.y + 1] = '#'; break;
+					case 'd': maze[prev.x + 1][prev.y] = '#'; break;
+					case 'u': maze[prev.x - 1][prev.y] = '#'; break;
+					case 'l': maze[prev.x][prev.y - 1] = '#'; break;
+					default: break;
+					}
+				}
+			}
+
+			void randomWalk(vector<vector<char>>& maze, Cell& start) {
+				if (start == Cell(0, 0)) { // path is already being made
+					vector<Cell> moves = possibleMoves(path.back());
+					Cell nextCell = moves[rand() % moves.size()];
+					if (find(path.begin(), path.end(), nextCell) == path.end()) {
+						char dir = checkCellDir(path.back(), nextCell);
+						path.push_back(nextCell);
+						maze[nextCell.x][nextCell.y] = 'P';
+						cout << dir << endl;
+						switch (dir)
+						{
+							case 'r': maze[nextCell.x][nextCell.y + 1] = 'P'; break;
+							case 'd': maze[nextCell.x + 1][nextCell.y] = 'P'; break;
+							case 'u': maze[nextCell.x - 1][nextCell.y] = 'P'; break;
+							case 'l': maze[nextCell.x][nextCell.y - 1] = 'P'; break;
+							default: break;
+						}
+					}
+					else {
+						eraseLoop(maze, nextCell);
+					}
+				}
+				else {
+					path.push_back(start);
+					maze[start.x][start.y] = 'P';
+				}
+			}
+
+			void addPathToMaze(vector<vector<char>>& maze) {
+				Cell prev;
+				while (!path.empty()) {
+					maze[path.back().x][path.back().y] = ' ';
+					unvisited.erase(path.back());
+					visited.insert(path.back());
+					prev = path.back();
+					path.pop_back();
+					if (!path.empty()) {
+						int dir = checkCellDir(path.back(), prev);
+						switch (dir)
+						{
+						case 'r': maze[prev.x][prev.y + 1] = ' '; break;
+						case 'd': maze[prev.x + 1][prev.y] = ' '; break;
+						case 'u': maze[prev.x - 1][prev.y] = ' '; break;
+						case 'l': maze[prev.x][prev.y - 1] = ' '; break;
+						default: break;
+						}
+					}
+				}
+			}
 			
 			void initialize(vector<vector<char>>& maze) {
 				srand(time(NULL));
 				for (int i = 0; i < maze.size(); i++) {
 					for (int j = 0; j < maze[0].size(); j++) {
-						if (i == 0 || j == 0 || i == maze.size() - 1 || j == maze[0].size() - 1) {
-							maze[i][j] = '#';
-						}
-						else {
-							maze[i][j] = ' ';
+						maze[i][j] = '#';
+						if (i % 2 != 0 && j % 2 != 0 && isValidCell(Cell(i, j))) {
+							unvisited.insert(Cell(i, j));
 						}
 					}
 				}
-				
+				Cell first = generateRandomCell();
+				maze[first.x][first.y] = ' ';
+				unvisited.erase(first);
+				visited.insert(first);
 				initialized = true;
 			}
 
@@ -478,6 +596,18 @@ namespace MazeGenerationAlgorithms {
 
 			void updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
+				if (unvisited.size() == 0) return;
+				Cell pathStart(0, 0);
+				if (path.size() == 0) { // then get a random cell from the unvisited set
+					int randomIndex = rand() % unvisited.size();
+					auto it = unvisited.begin();
+					advance(it, randomIndex);
+					pathStart = *it;
+				}
+				randomWalk(maze, pathStart);
+				if (visited.find(path.back()) != visited.end()) {
+					addPathToMaze(maze);
+				}
 			}
 		};
 
