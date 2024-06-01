@@ -31,6 +31,10 @@ namespace MazeGenerationAlgorithms {
 			kruskals.updateMaze(maze);
 		}
 
+		void generateMazeWilsons(vector<vector<char>>& maze) {
+			wilsons.updateMaze(maze);
+		}
+
 
 	private:
 		class DFS {
@@ -420,10 +424,59 @@ namespace MazeGenerationAlgorithms {
 			}
 		};
 
+		class Wilsons {
+		private:
+			struct Cell {
+				int x, y;
+				Cell(int x_val, int y_val) : x(x_val), y(y_val) {}
+				bool operator==(const Cell& other) const {
+					return x == other.x && y == other.y;
+				}
+			};
+			struct CellHash {
+				std::size_t operator()(const Cell& cell) const {
+					std::size_t h1 = std::hash<int>()(cell.x);
+					std::size_t h2 = std::hash<int>()(cell.y);
+					return h1 ^ (h2 << 1);
+				}
+			};
+			struct CellEqual {
+				bool operator()(const Cell& lhs, const Cell& rhs) const {
+					return lhs.x == rhs.x && lhs.y == rhs.y;
+				}
+			};
+
+			bool initialized;
+			
+
+			bool isValidCell(Cell& cell) {
+				return cell.x >= 1 && cell.x < (MAZE_HEIGHT - 1)
+					&& cell.y >= 1 && cell.y < (MAZE_WIDTH - 1);
+			}
+
+			
+			void initialize(vector<vector<char>>& maze) {
+				srand(time(NULL));
+
+				
+				initialized = true;
+			}
+
+		public:
+			Wilsons() {
+				initialized = false;
+			}
+
+			void updateMaze(vector<vector<char>>& maze) {
+				
+			}
+		};
+
 		private:
 			DFS dfs;
 			Prims prims;
 			Kruskals kruskals;
+			Wilsons wilsons;
 
 		// add more algorithms and so on
 	};

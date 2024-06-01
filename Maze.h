@@ -85,11 +85,14 @@ public:
 		else if (choice == 3) {
 			algorithms.generateMazeKruskals(layout);
 		}
+		else if (choice == 4) {
+			algorithms.generateMazeWilsons(layout);
+		}
 	}
 
 
 	void draw(RenderWindow& window) {
-		generateMaze(3);
+		generateMaze(2);
 		maze = convertMaze();
 
 		for (int i = 0; i < maze.size(); i++) {
