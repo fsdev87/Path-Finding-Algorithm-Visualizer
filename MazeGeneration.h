@@ -530,7 +530,6 @@ namespace MazeGenerationAlgorithms {
 						char dir = checkCellDir(path.back(), nextCell);
 						path.push_back(nextCell);
 						maze[nextCell.x][nextCell.y] = 'P';
-						cout << dir << endl;
 						switch (dir)
 						{
 							case 'r': maze[nextCell.x][nextCell.y + 1] = 'P'; break;
