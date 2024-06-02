@@ -92,12 +92,20 @@ public:
 		}
 	}
 
+	void setChoice (int n) {
+		choice = n;
+	}
+
 	void reset() {
+		choice = 0;
 		algorithms.reset();
 		for (int i = 0; i < layout.size(); i++) {
 			for (int j = 0; j < layout[0].size(); j++) {
 				if (i == 0 || j == 0 || i == layout.size() - 1 || j == layout[0].size() - 1) {
 					layout[i][j] = '#';
+				}
+				else {
+					layout[i][j] = ' ';
 				}
 			}
 		}
@@ -115,4 +123,5 @@ public:
 			}
 		}
 	}
+
 };

@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 #include <SFML/Audio.hpp>
+#include <functional>
 #include "Globals.h"
 #include "Maze.h"
 
@@ -19,7 +20,7 @@ private:
     Color normalColor;
     Color hoverColor;
     Color clickedColor;
-    std::function<void()> onClick;
+    function<void()> onClick;
     bool isHovered;
     bool isClicked;
 
@@ -104,8 +105,13 @@ public:
         clickedColor = color;
     }
 
-    void setOnClick(std::function<void()> handler) {
-        onClick = handler;
+    void setOnClick(const std::function<void()>& onClick) {
+        this->onClick = onClick;
+    }
+
+    template <typename Callable, typename... Args>
+    void setOnClick(Callable&& func, Args&&... args) {
+        onClick = bind(forward<Callable>(func), forward<Args>(args)...);
     }
 
     void update(const RenderWindow& window) {
@@ -142,6 +148,14 @@ public:
     }
 };
 
+
+void generateHandler(Maze& maze, pair<int, int>& choice) {
+    maze.setChoice(choice.first * 2 + choice.second + 1);
+}
+
+void resetHandler(Maze& maze) {
+    maze.reset();
+}
 
 class Interface {
 private:
@@ -188,9 +202,7 @@ public:
         generate.setNormalColor(Color(150, 150, 150));
         generate.setHoverColor(Color(150, 150, 150));
         generate.setClickedColor(Color(0x04, 0xd9, 0xff));
-        generate.setOnClick([]() {
-        std::cout << "Button clicked!" << std::endl;
-        });
+        generate.setOnClick(generateHandler, ref(maze), ref(generationSelected));
 
         resetGenerate.setPosition(MAZE_WIDTH * TILE_SIZE + 160, 230);
         resetGenerate.setSize(120, 40);
@@ -200,9 +212,7 @@ public:
         resetGenerate.setNormalColor(Color(150, 150, 150));
         resetGenerate.setHoverColor(Color(150, 150, 150));
         resetGenerate.setClickedColor(Color(0x04, 0xd9, 0xff));
-        resetGenerate.setOnClick([]() {
-            std::cout << "Button clicked!" << std::endl;
-            });
+        resetGenerate.setOnClick(resetHandler, ref(maze));
     }
 
     void drawText(RenderWindow& window) {
