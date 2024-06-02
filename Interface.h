@@ -150,7 +150,7 @@ public:
 
 
 void generateHandler(Maze& maze, pair<int, int>& choice) {
-    maze.setChoice(choice.first * 2 + choice.second + 1);
+    maze.setChoiceGenerate(choice.first * 2 + choice.second + 1);
 }
 
 void resetHandler(Maze& maze) {

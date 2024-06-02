@@ -1,18 +1,22 @@
 #pragma once
 
+#include <fstream>
+#include <string>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "Globals.h"
 #include "MazeGeneration.h"
+#include "PathFinding.h"
 
 using namespace sf;
 using namespace std;
-using namespace MazeGenerationAlgorithms;
 
 enum Tile {
 	Wall,
 	Cell,
-	CurrentCell
+	CurrentCell,
+	Start,
+	End
 };
 
 struct Node {
@@ -37,6 +41,12 @@ struct Node {
 		else if (type == CurrentCell) {
 			inner.setFillColor(Color::White);
 		}
+		else if (type == Start) {
+			inner.setFillColor(Color::Green);
+		}
+		else if (type == End) {
+			inner.setFillColor(Color::Red);
+		}
 
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
 		inner.setPosition(outer.getPosition().x + 2, outer.getPosition().y + 2);
@@ -51,13 +61,47 @@ class Maze {
 private:
 	vector<vector<char>> layout;
 	vector<vector<Node>> maze;
-	Algorithms algorithms;
+	MazeGenerationAlgorithms::Algorithms generators;
+	PathFindingAlgorithms::Algorithms finders;
 
-	int choice;
+	pair<int, int> start;
+	pair<int, int> end;
+
+	int generateChoice;
+	int pathChoice;
 public:
+
+	void read2DArrayFromFile(std::vector<std::vector<char>>& array, const std::string& filename) {
+		std::ifstream inFile(filename);
+
+		if (!inFile) {
+			std::cerr << "Error opening file for reading: " << filename << std::endl;
+			return;
+		}
+
+		std::string line;
+		while (std::getline(inFile, line)) {
+			std::vector<char> row;
+			for (int i = 0; i < line.length(); i++) {
+				if (i % 2 == 0) {
+					row.push_back(line[i]);
+				}
+			}
+			array.push_back(row);
+		}
+
+		inFile.close();
+	}
+
 	Maze() {
-		layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
-		choice = 0;
+		//layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
+		start = {1, 1};
+		end = { 23, 39 };
+		read2DArrayFromFile(layout, "Maze.txt");
+		layout[start.first][start.second] = 'S';
+		layout[end.first][end.second] = 'E';
+		generateChoice = 0;
+		pathChoice = 1;
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));
@@ -72,6 +116,12 @@ public:
 				else if (layout[i][j] == 'C' || layout[i][j] == 'F' || layout[i][j] == 'P') {
 					mapping[i][j].type = CurrentCell;
 				}
+				else if (layout[i][j] == 'S') {
+					mapping[i][j].type = Start;
+				}
+				else if (layout[i][j] == 'E') {
+					mapping[i][j] = End;
+				}
 			}
 		}
 		return mapping;
@@ -79,26 +129,42 @@ public:
 
 	void generateMaze(int choice) {
 		if (choice == 1) {
-			algorithms.generateMazeDFS(layout);
+			generators.generateMazeDFS(layout);
 		}
 		else if (choice == 2) {
-			algorithms.generateMazePrims(layout);
+			generators.generateMazePrims(layout);
 		}
 		else if (choice == 3) {
-			algorithms.generateMazeKruskals(layout);
+			generators.generateMazeKruskals(layout);
 		}
 		else if (choice == 4) {
-			algorithms.generateMazeWilsons(layout);
+			generators.generateMazeWilsons(layout);
 		}
 	}
 
-	void setChoice (int n) {
-		choice = n;
+	void findPath(int choice) {
+		if (choice == 1) {
+			finders.findPathDFS(layout, start, end);
+		}
+		else if (choice == 2) {
+			finders.findPathBFS(layout, start, end);
+		}
+		else if (choice == 3) {
+			finders.findPathDijkstra(layout, start, end);
+		}
+		else if (choice == 4) {
+			finders.findPathAStar(layout, start, end);
+		}
+	}
+
+	void setChoiceGenerate (int n) {
+		generateChoice = n;
 	}
 
 	void reset() {
-		choice = 0;
-		algorithms.reset();
+		generateChoice = 0;
+		pathChoice = 0;
+		generators.reset();
 		for (int i = 0; i < layout.size(); i++) {
 			for (int j = 0; j < layout[0].size(); j++) {
 				if (i == 0 || j == 0 || i == layout.size() - 1 || j == layout[0].size() - 1) {
@@ -112,8 +178,10 @@ public:
 	}
 
 	void draw(RenderWindow& window) {
-		if (choice != 0) generateMaze(choice);
-		else reset();
+		if (generateChoice != 0) generateMaze(generateChoice);
+		//else reset();
+
+		if (pathChoice != 0) findPath(pathChoice);
 
 		maze = convertMaze();
 
