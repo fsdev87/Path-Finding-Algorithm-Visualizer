@@ -1,7 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <vector>
 #include <SFML/Audio.hpp>
+#include "Globals.h"
 #include "Maze.h"
 
 using namespace sf;
@@ -66,7 +68,9 @@ public:
     void setText(const std::string& buttonText) {
         text.setString(buttonText);
         sf::FloatRect textRect = text.getLocalBounds();
-        text.setPosition(shape.getPosition());
+        float tpx = shape.getPosition().x + (shape.getSize().x - text.getCharacterSize() * text.getString().getSize()) / 2.0;
+        float tpy = (shape.getPosition().y + shape.getSize().y / 2.0) - (text.getCharacterSize() / 2.0);
+        text.setPosition(Vector2f(tpx, tpy));
     }
 
     void setFont(const std::string& fontPath) {
@@ -138,13 +142,32 @@ public:
 
 class Interface {
 private:
+    Font font;
+    
+    Text headText;
+    Text generationText;
+    
+
     Button button;
 	Maze maze;
 public:
     Interface() {
+        // text initialization
+        font.loadFromFile("ethnocentric.otf");
+        headText.setFont(font);
+        headText.setCharacterSize(20);
+        headText.setString("Maze Visualizer");
+        headText.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 10);
+
+        generationText.setFont(font);
+        generationText.setCharacterSize(15);
+        generationText.setString("\t\tChoose Maze\nGeneration Algorithm");
+        generationText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 70);
+
+
         button.setPosition(300, 250);
-        button.setSize(200, 100);
-        button.setCharacterSize(20);
+        button.setSize(150, 50);
+        button.setCharacterSize(15);
         button.setText("Click Me");
         button.setFont("ethnocentric.otf"); 
         button.setNormalColor(sf::Color(100, 100, 100));
@@ -154,9 +177,16 @@ public:
         std::cout << "Button clicked!" << std::endl;
         });
     }
+
+    void drawText(RenderWindow& window) {
+        window.draw(headText);
+        window.draw(generationText);
+    }
+
 	void control(RenderWindow& window) {
 		maze.draw(window);
         button.update(window);
         button.render(window);
+        drawText(window);
 	}
 };
