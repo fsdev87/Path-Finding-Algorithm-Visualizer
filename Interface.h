@@ -155,6 +155,10 @@ private:
 public:
     Interface() {
         generationOptions = { "DFS", "Prims", "Kruskals", "Wilsons" };
+        generationChoices = {
+            {Text(), Text()},
+            {Text(), Text()}
+        };
         generationSelected = { 0, 0 };
 
         // text initialization
@@ -188,7 +192,37 @@ public:
         window.draw(headText);
         window.draw(generationText);
 
-        
+        for (int i = 0; i < generationChoices.size(); i++) {
+            for (int j = 0; j < generationChoices[i].size(); j++) {
+                int index = i * generationChoices[0].size() + j;
+                generationChoices[i][j].setFont(font);
+                generationChoices[i][j].setString(generationOptions[index]);
+                generationChoices[i][j].setFillColor(Color::White);
+                generationChoices[i][j].setCharacterSize(13);
+                switch (index) {
+                case 0:
+                    generationChoices[i][j].setPosition(30, 0);
+                    break;
+                case 1:
+                    generationChoices[i][j].setPosition(160, 0);
+                    break;
+                case 2:
+                    generationChoices[i][j].setPosition(0, generationChoices[i][j].getCharacterSize() + 15);
+                    break;
+                case 3:
+                    generationChoices[i][j].setPosition(150, generationChoices[i][j].getCharacterSize() + 15);
+                    break;
+                }
+                generationChoices[i][j].move(MAZE_WIDTH * TILE_SIZE + 30, 150);
+
+                if (generationSelected.first == i && generationSelected.second == j) {
+                    generationChoices[i][j].setFillColor(Color(0x04, 0xd9, 0xff));
+                    generationChoices[i][j].setCharacterSize(15);
+                    generationChoices[i][j].move(-5, -5);
+                }
+                window.draw(generationChoices[i][j]);
+            }
+        }
     }
 
     void drawButtons(RenderWindow& window) {
