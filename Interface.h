@@ -11,23 +11,23 @@ using namespace std;
 
 class Button {
 private:
-    sf::RectangleShape shape;
-    sf::Text text;
-    sf::Font font;
-    sf::SoundBuffer buffer;
-    sf::Sound sound;
-    sf::Color normalColor;
-    sf::Color hoverColor;
-    sf::Color clickedColor;
+    RectangleShape shape;
+    Text text;
+    Font font;
+    SoundBuffer buffer;
+    Sound sound;
+    Color normalColor;
+    Color hoverColor;
+    Color clickedColor;
     std::function<void()> onClick;
     bool isHovered;
     bool isClicked;
 
 public:
     Button()
-        : normalColor(sf::Color(100, 100, 100)),
-        hoverColor(sf::Color(150, 150, 150)),
-        clickedColor(sf::Color(200, 200, 200)),
+        : normalColor(Color(100, 100, 100)),
+        hoverColor(Color(150, 150, 150)),
+        clickedColor(Color(200, 200, 200)),
         isHovered(false),
         isClicked(false) {
     }
@@ -35,17 +35,17 @@ public:
     Button(float x, float y, float width, float height, const std::string& buttonText, std::function<void()> onClick)
         : onClick(onClick), isHovered(false), isClicked(false) {
         shape.setPosition(x, y);
-        shape.setSize(sf::Vector2f(width, height));
+        shape.setSize(Vector2f(width, height));
 
-        text.setFillColor(sf::Color::White);
+        text.setFillColor(Color::White);
 
         // Center the text
         setText(buttonText);
 
         // Set button colors
-        normalColor = sf::Color(100, 100, 100);
-        hoverColor = sf::Color(150, 150, 150);
-        clickedColor = sf::Color(200, 200, 200);
+        normalColor = Color(100, 100, 100);
+        hoverColor = Color(150, 150, 150);
+        clickedColor = Color(200, 200, 200);
 
         shape.setFillColor(normalColor);
     }
@@ -61,13 +61,13 @@ public:
     }
 
     void setSize(float width, float height) {
-        shape.setSize(sf::Vector2f(width, height));
+        shape.setSize(Vector2f(width, height));
         text.setPosition(shape.getPosition().x + width / 2.0f, shape.getPosition().y + height / 2.0f);
     }
 
     void setText(const std::string& buttonText) {
         text.setString(buttonText);
-        sf::FloatRect textRect = text.getLocalBounds();
+        FloatRect textRect = text.getLocalBounds();
         float tpx = shape.getPosition().x + (shape.getSize().x - text.getCharacterSize() * text.getString().getSize()) / 2.0;
         float tpy = (shape.getPosition().y + shape.getSize().y / 2.0) - (text.getCharacterSize() / 2.0);
         text.setPosition(Vector2f(tpx, tpy));
@@ -91,16 +91,16 @@ public:
         }
     }
 
-    void setNormalColor(const sf::Color& color) {
+    void setNormalColor(const Color& color) {
         normalColor = color;
         shape.setFillColor(normalColor);
     }
 
-    void setHoverColor(const sf::Color& color) {
+    void setHoverColor(const Color& color) {
         hoverColor = color;
     }
 
-    void setClickedColor(const sf::Color& color) {
+    void setClickedColor(const Color& color) {
         clickedColor = color;
     }
 
@@ -108,14 +108,15 @@ public:
         onClick = handler;
     }
 
-    void update(const sf::RenderWindow& window) {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        sf::FloatRect buttonBounds = shape.getGlobalBounds();
+    void update(const RenderWindow& window) {
+        Vector2i mousePos = Mouse::getPosition(window);
+        FloatRect buttonBounds = shape.getGlobalBounds();
 
-        if (buttonBounds.contains(static_cast<sf::Vector2f>(mousePos))) {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (buttonBounds.contains(static_cast<Vector2f>(mousePos))) {
+            if (Mouse::isButtonPressed(Mouse::Left)) {
                 isClicked = true;
                 shape.setFillColor(clickedColor);
+                text.setFillColor(hoverColor);
             }
             else {
                 if (isClicked) {
@@ -125,15 +126,17 @@ public:
                 }
                 isHovered = true;
                 shape.setFillColor(hoverColor);
+                text.setFillColor(clickedColor);
             }
         }
         else {
             isHovered = false;
             shape.setFillColor(normalColor);
+            text.setFillColor(Color::White);
         }
     }
 
-    void render(sf::RenderWindow& window) {
+    void render(RenderWindow& window) {
         window.draw(shape);
         window.draw(text);
     }
@@ -150,7 +153,9 @@ private:
     vector<vector<Text>> generationChoices;
     pair<int, int> generationSelected;
 
-    Button button;
+    Button generate;
+    Button resetGenerate;
+
 	Maze maze;
 public:
     Interface() {
@@ -175,17 +180,29 @@ public:
 
 
         // buttons inialization
-        button.setPosition(300, 250);
-        button.setSize(150, 50);
-        button.setCharacterSize(15);
-        button.setText("Click Me");
-        button.setFont("ethnocentric.otf"); 
-        button.setNormalColor(sf::Color(100, 100, 100));
-        button.setHoverColor(sf::Color(150, 150, 150));
-        button.setClickedColor(sf::Color(200, 200, 200));
-        button.setOnClick([]() {
+        generate.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 230);
+        generate.setSize(120, 40);
+        generate.setCharacterSize(13);
+        generate.setText("Generate");
+        generate.setFont("ethnocentric.otf"); 
+        generate.setNormalColor(Color(150, 150, 150));
+        generate.setHoverColor(Color(150, 150, 150));
+        generate.setClickedColor(Color(0x04, 0xd9, 0xff));
+        generate.setOnClick([]() {
         std::cout << "Button clicked!" << std::endl;
         });
+
+        resetGenerate.setPosition(MAZE_WIDTH * TILE_SIZE + 160, 230);
+        resetGenerate.setSize(120, 40);
+        resetGenerate.setCharacterSize(13);
+        resetGenerate.setText("Reset");
+        resetGenerate.setFont("ethnocentric.otf");
+        resetGenerate.setNormalColor(Color(150, 150, 150));
+        resetGenerate.setHoverColor(Color(150, 150, 150));
+        resetGenerate.setClickedColor(Color(0x04, 0xd9, 0xff));
+        resetGenerate.setOnClick([]() {
+            std::cout << "Button clicked!" << std::endl;
+            });
     }
 
     void drawText(RenderWindow& window) {
@@ -226,8 +243,10 @@ public:
     }
 
     void drawButtons(RenderWindow& window) {
-        button.update(window);
-        button.render(window);
+        generate.update(window);
+        generate.render(window);
+        resetGenerate.update(window);
+        resetGenerate.render(window);
     }
 
 	void control(RenderWindow& window) {
