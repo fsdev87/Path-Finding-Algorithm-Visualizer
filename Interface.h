@@ -146,12 +146,17 @@ private:
     
     Text headText;
     Text generationText;
-    
+    vector<string> generationOptions;
+    vector<vector<Text>> generationChoices;
+    pair<int, int> generationSelected;
 
     Button button;
 	Maze maze;
 public:
     Interface() {
+        generationOptions = { "DFS", "Prims", "Kruskals", "Wilsons" };
+        generationSelected = { 0, 0 };
+
         // text initialization
         font.loadFromFile("ethnocentric.otf");
         headText.setFont(font);
@@ -165,6 +170,7 @@ public:
         generationText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 70);
 
 
+        // buttons inialization
         button.setPosition(300, 250);
         button.setSize(150, 50);
         button.setCharacterSize(15);
@@ -181,12 +187,42 @@ public:
     void drawText(RenderWindow& window) {
         window.draw(headText);
         window.draw(generationText);
+
+        
+    }
+
+    void drawButtons(RenderWindow& window) {
+        button.update(window);
+        button.render(window);
     }
 
 	void control(RenderWindow& window) {
+        if (Keyboard::isKeyPressed(Keyboard::Up)) {
+            if (generationSelected.first > 0) {
+                generationSelected.first--;
+            }
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Down)) {
+            if (generationSelected.first < generationChoices.size() - 1) {
+                generationSelected.first++;
+            }
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Left)) {
+            if (generationSelected.second > 0) {
+                generationSelected.second--;
+            }
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Right)) {
+            if (generationSelected.second < generationChoices[0].size() - 1) {
+                generationSelected.second++;
+            }
+        }
+
 		maze.draw(window);
-        button.update(window);
-        button.render(window);
+        drawButtons(window);
         drawText(window);
 	}
 };
