@@ -16,7 +16,8 @@ enum Tile {
 	Cell,
 	CurrentCell,
 	Start,
-	End
+	End,
+	Path
 };
 
 struct Node {
@@ -46,6 +47,9 @@ struct Node {
 		}
 		else if (type == End) {
 			inner.setFillColor(Color::Red);
+		}
+		else if (type == Path) {
+			inner.setFillColor(Color::Blue);
 		}
 
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
@@ -120,7 +124,10 @@ public:
 					mapping[i][j].type = Start;
 				}
 				else if (layout[i][j] == 'E') {
-					mapping[i][j] = End;
+					mapping[i][j].type = End;
+				}
+				else if (layout[i][j] == 'R') {
+					mapping[i][j].type = Path;
 				}
 			}
 		}
