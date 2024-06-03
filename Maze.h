@@ -77,10 +77,10 @@ public:
 
 	Maze() {
 		layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
-		start = {1, 1};
-		end = { 23, 39 };
-		generateChoice = 2;
-		pathChoice = 1;
+		start = { 0, 0 };
+		end = { 0, 0 };
+		generateChoice = 0;
+		pathChoice = 0;
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));
@@ -144,6 +144,8 @@ public:
 	}
 
 	void reset() {
+		start = { 0, 0 };
+		end = { 0, 0 };
 		generateChoice = 0;
 		pathChoice = 0;
 		generators.reset();
@@ -162,8 +164,8 @@ public:
 	void draw(RenderWindow& window) {
 		if (generateChoice != 0) {
 			if (generateMaze(generateChoice)) {
-				layout[start.first][start.second] = 'S';
-				layout[end.first][end.second] = 'E';
+				if (start.first != 0 && start.second != 0) layout[start.first][start.second] = 'S';
+				if (end.first != 0 && end.second != 0) layout[end.first][end.second] = 'E';
 				if (pathChoice != 0) findPath(pathChoice);
 			}
 		}

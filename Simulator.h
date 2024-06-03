@@ -7,9 +7,7 @@ using namespace sf;
 class Simulator {
 private:
     RenderWindow window;
-    //Interface interface;
-
-    Maze maze;
+    Interface interface;
 public:
 	Simulator():window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Path Finder Simulator 2D") {
         window.setFramerateLimit(30);
@@ -26,8 +24,7 @@ public:
             }
 
             window.clear(Color(0x0e, 0x19, 0x1f));
-            //interface.control(window);
-            maze.draw(window);
+            interface.control(window);
             window.display();
         }
 	}
