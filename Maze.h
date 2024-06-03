@@ -105,7 +105,7 @@ public:
 		layout[start.first][start.second] = 'S';
 		layout[end.first][end.second] = 'E';
 		generateChoice = 0;
-		pathChoice = 3;
+		pathChoice = 4;
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));

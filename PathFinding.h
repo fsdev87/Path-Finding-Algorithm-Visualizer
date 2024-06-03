@@ -3,6 +3,7 @@
 #include <vector>
 #include <stack>
 #include <queue>
+#include <cmath>
 #include <iostream>
 #include <unordered_map>
 #include <unordered_set>
@@ -26,7 +27,7 @@ namespace PathFindingAlgorithms {
 		}
 
 		void findPathAStar(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
-
+			aStar.findPath(maze, start, end);
 		}
 
 
@@ -389,7 +390,140 @@ namespace PathFindingAlgorithms {
 		};
 
 		class AStar {
+		private:
+			struct Cell {
+				int i, j;
+				int f, g, h;
+				Cell(int i = 0, int j = 0) : i(i), j(j) {
+					f = 0; g = 0; h = 0;
+				}
+				bool operator==(const Cell& other) const {
+					return i == other.i && j == other.j;
+				}
 
+				bool operator<(const Cell& other) const {
+					return std::tie(i, j) < std::tie(other.i, other.j);
+				}
+			};
+
+
+			bool initialized;
+			vector<Cell> path;
+			map<Cell, Cell> parentMap;
+			vector<Cell> openList;
+			vector<Cell> closedList;
+
+			bool isValid(Cell& cell) {
+				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
+					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
+			}
+
+			void reconstructPath(Cell end, Cell start) {
+				path.clear();
+				for (Cell at = end; !(at == start); at = parentMap[at]) {
+					path.push_back(at);
+				}
+				std::reverse(path.begin(), path.end());
+			}
+
+			vector<Cell> getAdjNodes(vector<vector<char>>& maze, Cell& cell) {
+				Cell up = Cell(cell.i - 1, cell.j);
+				Cell down = Cell(cell.i + 1, cell.j);
+				Cell left = Cell(cell.i, cell.j - 1);
+				Cell right = Cell(cell.i, cell.j + 1);
+
+				vector<Cell> cells;
+				if (isValid(up)) {
+					char c = maze[up.i][up.j];
+					if (c == ' ' || c == 'E') {
+						cells.push_back(up);
+					}
+				}
+				if (isValid(down)) {
+					char c = maze[down.i][down.j];
+					if (c == ' ' || c == 'E') {
+						cells.push_back(down);
+					}
+				}
+				if (isValid(left)) {
+					char c = maze[left.i][left.j];
+					if (c == ' ' || c == 'E') {
+						cells.push_back(left);
+					}
+				}
+				if (isValid(right)) {
+					char c = maze[right.i][right.j];
+					if (c == ' ' || c == 'E') {
+						cells.push_back(right);
+					}
+				}
+				return cells;
+			}
+
+
+			void initialize(pair<int, int> start, pair<int, int> end) {
+				Cell startCell = Cell(start.first, start.second);
+				openList.push_back(startCell);
+				parentMap[startCell] = startCell;
+				initialized = true;
+			}
+
+		public:
+			AStar() {
+				initialized = false;
+			}
+
+			void findPath(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
+				if (!initialized) initialize(start, end);
+				if (openList.empty()) {
+					return;
+				}
+				Cell current = openList[0];
+				int currentIndex = 0;
+				for (int i = 0; i < openList.size(); i++) {
+					if (openList[i].f < current.f) {
+						current = openList[i];
+						currentIndex = i;
+					}
+				}
+				openList.erase(openList.begin() + currentIndex);
+				closedList.push_back(current);
+
+				if (maze[current.i][current.j] != 'S' && maze[current.i][current.j] != 'E') {
+					maze[current.i][current.j] = 'C';
+				}
+
+				if (maze[current.i][current.j] == 'E') {
+					// then we have found the path
+					reconstructPath(current, Cell(start.first, start.second));
+					openList.clear();
+					for (Cell& cell : path) {
+						if (cell == current) continue;
+						maze[cell.i][cell.j] = 'R';
+					}
+					return;
+				}
+
+				vector<Cell> adjCells = getAdjNodes(maze, current);
+
+				for (Cell& next : adjCells) {
+					if (find(closedList.begin(), closedList.end(), next) != closedList.end()) {
+						return;
+					}
+
+					next.g = current.g + 1;
+					next.h = pow(next.i - end.first, 2) + pow(next.j - end.second, 2);
+					next.f = next.g + next.h;
+
+					for (Cell& openCell : openList) {
+						if (next == openCell && next.g > openCell.g) {
+							return;
+						}
+					}
+					parentMap[next] = current;
+					openList.push_back(next);
+				}
+			}
 		};
 
 		DFS dfs;
