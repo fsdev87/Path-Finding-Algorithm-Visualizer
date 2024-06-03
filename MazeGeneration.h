@@ -21,20 +21,20 @@ using namespace std;
 namespace MazeGenerationAlgorithms {
 	class Algorithms {
 	public:
-		void generateMazeDFS(vector<vector<char>>& maze) {
-			dfs.updateMaze(maze);
+		bool generateMazeDFS(vector<vector<char>>& maze) {
+			return dfs.updateMaze(maze);
 		}
 
-		void generateMazePrims(vector<vector<char>>& maze) {
-			prims.updateMaze(maze);
+		bool generateMazePrims(vector<vector<char>>& maze) {
+			return prims.updateMaze(maze);
 		}
 
-		void generateMazeKruskals(vector<vector<char>>& maze) {
-			kruskals.updateMaze(maze);
+		bool generateMazeKruskals(vector<vector<char>>& maze) {
+			return kruskals.updateMaze(maze);
 		}
 
-		void generateMazeWilsons(vector<vector<char>>& maze) {
-			wilsons.updateMaze(maze);
+		bool generateMazeWilsons(vector<vector<char>>& maze) {
+			return wilsons.updateMaze(maze);
 		}
 
 		void reset() {
@@ -131,14 +131,9 @@ namespace MazeGenerationAlgorithms {
 				}
 			}
 
-			void updateMaze(vector<vector<char>>& maze) {
+			bool updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
-				if (st.empty()) {
-					//maze[prevCell.i][prevCell.j] = ' ';
-					
-					// the above line removes the cursor
-					return;
-				}
+				if (st.empty()) return true;
 
 				Cell current = st.top();
 				maze[current.i][current.j] = 'C';
@@ -169,6 +164,7 @@ namespace MazeGenerationAlgorithms {
 					st.push(selected);
 				}
 				prevCell = current;
+				return false;
 			}
 		};
 
@@ -268,11 +264,9 @@ namespace MazeGenerationAlgorithms {
 				frontierCells.clear();
 			}
 
-			void updateMaze(vector<vector<char>>& maze) {
+			bool updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
-				if (frontierCells.empty()) {
-					return;
-				}
+				if (frontierCells.empty()) return true;
 
 				int choice = rand() % frontierCells.size();
 				Cell currentFrontier = frontierCells[choice];
@@ -280,7 +274,7 @@ namespace MazeGenerationAlgorithms {
 				Cell connectedCell = getConnectingCell(currentFrontier, maze);
 				if (connectedCell.i == 0 && connectedCell.j == 0) {
 					frontierCells.erase(frontierCells.begin() + choice);
-					return;
+					return false;
 				}
 
 				int dx = currentFrontier.j - connectedCell.j;
@@ -302,6 +296,7 @@ namespace MazeGenerationAlgorithms {
 				vector<Cell> frontiers = computeFrontierCells(currentFrontier, maze);
 				frontierCells.erase(frontierCells.begin() + choice);
 				frontierCells.insert(frontierCells.end(), frontiers.begin(), frontiers.end());
+				return false;
 			}
 		};
 
@@ -443,9 +438,9 @@ namespace MazeGenerationAlgorithms {
 				CellSets.clear();
 			}
 
-			void updateMaze(vector<vector<char>>& maze) {
+			bool updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
-				if (removedWalls >= (totalCells - 1)) return;
+				if (removedWalls >= (totalCells - 1)) return true;
 
 				int x = rand() % walls.size();
 				Cell chosenWall = walls[x];
@@ -454,6 +449,8 @@ namespace MazeGenerationAlgorithms {
 					walls.erase(walls.begin() + x);
 					removedWalls++;
 				}
+
+				return false;
 			}
 		};
 
@@ -631,9 +628,9 @@ namespace MazeGenerationAlgorithms {
 				path.clear();
 			}
 
-			void updateMaze(vector<vector<char>>& maze) {
+			bool updateMaze(vector<vector<char>>& maze) {
 				if (!initialized) initialize(maze);
-				if (unvisited.size() == 0) return;
+				if (unvisited.size() == 0) return true;
 				Cell pathStart(0, 0);
 				if (path.size() == 0) { // then get a random cell from the unvisited set
 					int randomIndex = rand() % unvisited.size();
@@ -645,6 +642,7 @@ namespace MazeGenerationAlgorithms {
 				if (visited.find(path.back()) != visited.end()) {
 					addPathToMaze(maze);
 				}
+				return false;
 			}
 		};
 

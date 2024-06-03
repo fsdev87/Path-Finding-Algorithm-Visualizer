@@ -75,37 +75,12 @@ private:
 	int pathChoice;
 public:
 
-	void read2DArrayFromFile(std::vector<std::vector<char>>& array, const std::string& filename) {
-		std::ifstream inFile(filename);
-
-		if (!inFile) {
-			std::cerr << "Error opening file for reading: " << filename << std::endl;
-			return;
-		}
-
-		std::string line;
-		while (std::getline(inFile, line)) {
-			std::vector<char> row;
-			for (int i = 0; i < line.length(); i++) {
-				if (i % 2 == 0) {
-					row.push_back(line[i]);
-				}
-			}
-			array.push_back(row);
-		}
-
-		inFile.close();
-	}
-
 	Maze() {
-		//layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
+		layout = vector<vector<char>>(MAZE_HEIGHT, vector<char>(MAZE_WIDTH, ' '));
 		start = {1, 1};
 		end = { 23, 39 };
-		read2DArrayFromFile(layout, "Maze.txt");
-		layout[start.first][start.second] = 'S';
-		layout[end.first][end.second] = 'E';
-		generateChoice = 0;
-		pathChoice = 4;
+		generateChoice = 2;
+		pathChoice = 1;
 	}
 	vector<vector<Node>> convertMaze() {
 		vector<vector<Node>> mapping(MAZE_HEIGHT, vector<Node>(MAZE_WIDTH));
@@ -134,18 +109,18 @@ public:
 		return mapping;
 	}
 
-	void generateMaze(int choice) {
+	bool generateMaze(int choice) {
 		if (choice == 1) {
-			generators.generateMazeDFS(layout);
+			return generators.generateMazeDFS(layout);
 		}
 		else if (choice == 2) {
-			generators.generateMazePrims(layout);
+			return generators.generateMazePrims(layout);
 		}
 		else if (choice == 3) {
-			generators.generateMazeKruskals(layout);
+			return generators.generateMazeKruskals(layout);
 		}
 		else if (choice == 4) {
-			generators.generateMazeWilsons(layout);
+			return generators.generateMazeWilsons(layout);
 		}
 	}
 
@@ -185,10 +160,14 @@ public:
 	}
 
 	void draw(RenderWindow& window) {
-		if (generateChoice != 0) generateMaze(generateChoice);
-		//else reset();
-
-		if (pathChoice != 0) findPath(pathChoice);
+		if (generateChoice != 0) {
+			if (generateMaze(generateChoice)) {
+				layout[start.first][start.second] = 'S';
+				layout[end.first][end.second] = 'E';
+				if (pathChoice != 0) findPath(pathChoice);
+			}
+		}
+		else reset();
 
 		maze = convertMaze();
 
