@@ -157,6 +157,51 @@ void resetHandler(Maze& maze) {
     maze.reset();
 }
 
+class SelectButton {
+private:
+    CircleShape outer;
+    CircleShape inner;
+public:
+    bool selected;
+    SelectButton() {
+        outer.setFillColor(Color::White);
+        outer.setRadius(8);
+
+        inner.setFillColor(Color(0x0e, 0x19, 0x1f));
+        inner.setRadius(6);
+
+        selected = false;
+    }
+
+    void setPosition(float x, float y) {
+        outer.setPosition(Vector2f(x, y));
+        inner.setPosition(outer.getPosition());
+        inner.move(2, 2);
+    }
+
+    void update(const RenderWindow& window, bool& otherSelected) {
+        Vector2i mousePos = Mouse::getPosition(window);
+        FloatRect buttonBounds = inner.getGlobalBounds();
+
+        if (buttonBounds.contains(static_cast<Vector2f>(mousePos))) {
+            if (Mouse::isButtonPressed(Mouse::Left)) {
+                inner.setFillColor(Color(0x04, 0xd9, 0xff));
+                selected = true;
+                otherSelected = false;
+            }
+        }
+
+        if (!selected) {
+            inner.setFillColor(Color(0x0e, 0x19, 0x1f));
+        }
+    }
+
+    void render(RenderWindow& window) {
+        window.draw(outer);
+        window.draw(inner);
+    }
+};
+
 class Interface {
 private:
     Font font;
@@ -170,9 +215,15 @@ private:
     Button generate;
     Button resetGenerate;
 
+    SelectButton generateSelect;
+    SelectButton findingSelect;
+
 	Maze maze;
+
+    bool generating;
 public:
     Interface() {
+        generating = false;
         generationOptions = { "DFS", "Prims", "Kruskals", "Wilsons" };
         generationChoices = {
             {Text(), Text()},
@@ -190,11 +241,11 @@ public:
         generationText.setFont(font);
         generationText.setCharacterSize(15);
         generationText.setString("\t\tChoose Maze\nGeneration Algorithm");
-        generationText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 70);
+        generationText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 50);
 
 
         // buttons inialization
-        generate.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 230);
+        generate.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 200);
         generate.setSize(120, 40);
         generate.setCharacterSize(13);
         generate.setText("Generate");
@@ -204,7 +255,7 @@ public:
         generate.setClickedColor(Color(0x04, 0xd9, 0xff));
         generate.setOnClick(generateHandler, ref(maze), ref(generationSelected));
 
-        resetGenerate.setPosition(MAZE_WIDTH * TILE_SIZE + 160, 230);
+        resetGenerate.setPosition(MAZE_WIDTH * TILE_SIZE + 160, 200);
         resetGenerate.setSize(120, 40);
         resetGenerate.setCharacterSize(13);
         resetGenerate.setText("Reset");
@@ -213,6 +264,9 @@ public:
         resetGenerate.setHoverColor(Color(150, 150, 150));
         resetGenerate.setClickedColor(Color(0x04, 0xd9, 0xff));
         resetGenerate.setOnClick(resetHandler, ref(maze));
+
+        generateSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 40, 51);
+        findingSelect.setPosition(200, 200);
     }
 
     void drawText(RenderWindow& window) {
@@ -240,7 +294,7 @@ public:
                     generationChoices[i][j].setPosition(150, generationChoices[i][j].getCharacterSize() + 15);
                     break;
                 }
-                generationChoices[i][j].move(MAZE_WIDTH * TILE_SIZE + 30, 150);
+                generationChoices[i][j].move(MAZE_WIDTH * TILE_SIZE + 30, 120);
 
                 if (generationSelected.first == i && generationSelected.second == j) {
                     generationChoices[i][j].setFillColor(Color(0x04, 0xd9, 0xff));
@@ -250,13 +304,33 @@ public:
                 window.draw(generationChoices[i][j]);
             }
         }
+
+        if (!generating) {
+            // here we will draw the find path text
+
+        }
     }
 
     void drawButtons(RenderWindow& window) {
         generate.update(window);
         generate.render(window);
+
         resetGenerate.update(window);
         resetGenerate.render(window);
+
+
+        // the select buttons logic
+        generateSelect.update(window, findingSelect.selected);
+        generateSelect.render(window);
+
+        findingSelect.update(window, generateSelect.selected);
+        
+
+        if (!generating) {
+            // here we will draw the find path options
+
+            findingSelect.render(window);
+        }
     }
 
 	void control(RenderWindow& window) {
