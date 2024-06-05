@@ -208,6 +208,7 @@ private:
     
     Text headText;
     Text generationText;
+    Text pathFindingText;
     vector<string> generationOptions;
     vector<vector<Text>> generationChoices;
     pair<int, int> generationSelected;
@@ -243,6 +244,11 @@ public:
         generationText.setString("\t\tChoose Maze\nGeneration Algorithm");
         generationText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 50);
 
+        pathFindingText.setFont(font);
+        pathFindingText.setCharacterSize(15);
+        pathFindingText.setString("\tChoose Start/End\nAnd Finding Algorithm");
+        pathFindingText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 260);
+
 
         // buttons inialization
         generate.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 200);
@@ -266,7 +272,7 @@ public:
         resetGenerate.setOnClick(resetHandler, ref(maze));
 
         generateSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 40, 51);
-        findingSelect.setPosition(200, 200);
+        findingSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 260);
     }
 
     void drawText(RenderWindow& window) {
@@ -307,7 +313,7 @@ public:
 
         if (!generating) {
             // here we will draw the find path text
-
+            window.draw(pathFindingText);
         }
     }
 
@@ -334,7 +340,7 @@ public:
     }
 
 	void control(RenderWindow& window) {
-        //generating = maze.draw(window); // uncomment this line for conditional redering
+        //generating = maze.draw(window); // uncomment this line for conditional rendering
         maze.draw(window);
 
         if (Keyboard::isKeyPressed(Keyboard::Up)) {
