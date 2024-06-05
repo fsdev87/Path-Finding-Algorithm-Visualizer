@@ -161,9 +161,11 @@ public:
 		}
 	}
 
-	void draw(RenderWindow& window) {
+	bool draw(RenderWindow& window) {
+		bool status = true;
 		if (generateChoice != 0) {
 			if (generateMaze(generateChoice)) {
+				status = false;
 				if (start.first != 0 && start.second != 0) layout[start.first][start.second] = 'S';
 				if (end.first != 0 && end.second != 0) layout[end.first][end.second] = 'E';
 				if (pathChoice != 0) findPath(pathChoice);
@@ -178,6 +180,8 @@ public:
 				maze[i][j].draw(window, j, i);
 			}
 		}
+
+		return status;
 	}
 
 };

@@ -334,6 +334,9 @@ public:
     }
 
 	void control(RenderWindow& window) {
+        //generating = maze.draw(window); // uncomment this line for conditional redering
+        maze.draw(window);
+
         if (Keyboard::isKeyPressed(Keyboard::Up)) {
             if (generationSelected.first > 0) {
                 generationSelected.first--;
@@ -358,7 +361,7 @@ public:
             }
         }
 
-		maze.draw(window);
+		
         drawButtons(window);
         drawText(window);
 	}
