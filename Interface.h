@@ -209,6 +209,7 @@ private:
     Text headText;
     Text generationText;
     Text pathFindingText;
+    Text startEnd;
     vector<string> generationOptions;
     vector<vector<Text>> generationChoices;
     pair<int, int> generationSelected;
@@ -248,6 +249,11 @@ public:
         pathFindingText.setCharacterSize(15);
         pathFindingText.setString("\tChoose Start/End\nAnd Finding Algorithm");
         pathFindingText.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 260);
+
+        startEnd.setFont(font);
+        startEnd.setCharacterSize(15);
+        startEnd.setString("Start: \t\tEnd: ");
+        startEnd.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 320);
 
 
         // buttons inialization
@@ -313,6 +319,7 @@ public:
 
         if (!generating) {
             // here we will draw the find path text
+            window.draw(startEnd);
             window.draw(pathFindingText);
         }
     }
