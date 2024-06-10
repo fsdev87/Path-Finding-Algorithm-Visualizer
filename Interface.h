@@ -212,7 +212,10 @@ private:
     Text startEnd;
     vector<string> generationOptions;
     vector<vector<Text>> generationChoices;
+    vector<string> pathOptions;
+    vector<vector<Text>> pathChoices;
     pair<int, int> generationSelected;
+    pair<int, int> pathSelected;
 
     Button generate;
     Button resetGenerate;
@@ -231,7 +234,14 @@ public:
             {Text(), Text()},
             {Text(), Text()}
         };
+        pathOptions = { "DFS", "BFS", "Dijkstra", "A Star" };
+        pathChoices = {
+            {Text(), Text()},
+            {Text(), Text()}
+        };
         generationSelected = { 0, 0 };
+        pathSelected = { 0, 0 };
+
 
         // text initialization
         font.loadFromFile("ethnocentric.otf");
@@ -252,8 +262,8 @@ public:
 
         startEnd.setFont(font);
         startEnd.setCharacterSize(15);
-        startEnd.setString("Start: \t\tEnd: ");
-        startEnd.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 320);
+        startEnd.setString("Start: \t\t  End: ");
+        startEnd.setPosition(MAZE_WIDTH * TILE_SIZE + 30, 320);
 
 
         // buttons inialization
@@ -321,6 +331,38 @@ public:
             // here we will draw the find path text
             window.draw(startEnd);
             window.draw(pathFindingText);
+
+            for (int i = 0; i < pathChoices.size(); i++) {
+                for (int j = 0; j < pathChoices[i].size(); j++) {
+                    int index = i * pathChoices[0].size() + j;
+                    pathChoices[i][j].setFont(font);
+                    pathChoices[i][j].setString(pathOptions[index]);
+                    pathChoices[i][j].setFillColor(Color::White);
+                    pathChoices[i][j].setCharacterSize(13);
+                    switch (index) {
+                    case 0:
+                        pathChoices[i][j].setPosition(30, 0);
+                        break;
+                    case 1:
+                        pathChoices[i][j].setPosition(160, 0);
+                        break;
+                    case 2:
+                        pathChoices[i][j].setPosition(0, pathChoices[i][j].getCharacterSize() + 15);
+                        break;
+                    case 3:
+                        pathChoices[i][j].setPosition(150, pathChoices[i][j].getCharacterSize() + 15);
+                        break;
+                    }
+                    pathChoices[i][j].move(MAZE_WIDTH * TILE_SIZE + 30, 365);
+
+                    if (pathSelected.first == i && pathSelected.second == j) {
+                        pathChoices[i][j].setFillColor(Color(0x04, 0xd9, 0xff));
+                        pathChoices[i][j].setCharacterSize(15);
+                        pathChoices[i][j].move(-5, -5);
+                    }
+                    window.draw(pathChoices[i][j]);
+                }
+            }
         }
     }
 
@@ -350,30 +392,56 @@ public:
         //generating = maze.draw(window); // uncomment this line for conditional rendering
         maze.draw(window);
 
-        if (Keyboard::isKeyPressed(Keyboard::Up)) {
-            if (generationSelected.first > 0) {
-                generationSelected.first--;
+        if (generateSelect.selected) {
+            if (Keyboard::isKeyPressed(Keyboard::Up)) {
+                if (generationSelected.first > 0) {
+                    generationSelected.first--;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Down)) {
+                if (generationSelected.first < generationChoices.size() - 1) {
+                    generationSelected.first++;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                if (generationSelected.second > 0) {
+                    generationSelected.second--;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                if (generationSelected.second < generationChoices[0].size() - 1) {
+                    generationSelected.second++;
+                }
             }
         }
+        else if (findingSelect.selected) {
+            if (Keyboard::isKeyPressed(Keyboard::Up)) {
+                if (pathSelected.first > 0) {
+                    pathSelected.first--;
+                }
+            }
 
-        if (Keyboard::isKeyPressed(Keyboard::Down)) {
-            if (generationSelected.first < generationChoices.size() - 1) {
-                generationSelected.first++;
+            if (Keyboard::isKeyPressed(Keyboard::Down)) {
+                if (pathSelected.first < pathChoices.size() - 1) {
+                    pathSelected.first++;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Left)) {
+                if (pathSelected.second > 0) {
+                    pathSelected.second--;
+                }
+            }
+
+            if (Keyboard::isKeyPressed(Keyboard::Right)) {
+                if (pathSelected.second < pathChoices[0].size() - 1) {
+                    pathSelected.second++;
+                }
             }
         }
-
-        if (Keyboard::isKeyPressed(Keyboard::Left)) {
-            if (generationSelected.second > 0) {
-                generationSelected.second--;
-            }
-        }
-
-        if (Keyboard::isKeyPressed(Keyboard::Right)) {
-            if (generationSelected.second < generationChoices[0].size() - 1) {
-                generationSelected.second++;
-            }
-        }
-
 		
         drawButtons(window);
         drawText(window);
