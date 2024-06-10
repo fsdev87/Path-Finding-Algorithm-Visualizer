@@ -202,6 +202,56 @@ public:
     }
 };
 
+class StartEndBlock: public SelectButton {
+private:
+    RectangleShape border;
+    RectangleShape main;
+    char type;
+public:
+    StartEndBlock() : SelectButton() {
+        border.setSize(Vector2f(20, 20));
+        main.setSize(Vector2f(16, 16));
+        type = 's';
+    }
+    void setType(char type) {
+        this->type = type;
+    }
+
+    void setPosition(float x, float y) {
+        border.setPosition(Vector2f(x, y));
+        main.setPosition(border.getPosition());
+        main.move(2, 2);
+    }
+    void update(const RenderWindow& window, bool& otherSelected) {
+        Vector2i mousePos = Mouse::getPosition(window);
+        FloatRect buttonBounds = main.getGlobalBounds();
+
+        if (buttonBounds.contains(static_cast<Vector2f>(mousePos))) {
+            if (Mouse::isButtonPressed(Mouse::Left)) {
+                border.setFillColor(Color(0xff, 0xff, 0xff));
+                selected = true;
+                otherSelected = false;
+            }
+        }
+
+        if (!selected) {
+            if (type == 's') {
+                main.setFillColor(Color(0, 255, 0));
+                border.setFillColor(Color(0, 255, 0));
+            }
+            else if (type == 'e') {
+                main.setFillColor(Color(255, 0, 0));
+                border.setFillColor(Color(255, 0, 0));
+            }
+        }
+    }
+
+    void render(RenderWindow& window) {
+        window.draw(border);
+        window.draw(main);
+    }
+};
+
 class Interface {
 private:
     Font font;
@@ -222,6 +272,9 @@ private:
 
     SelectButton generateSelect;
     SelectButton findingSelect;
+
+    StartEndBlock start;
+    StartEndBlock end;
 
 	Maze maze;
 
@@ -289,6 +342,11 @@ public:
 
         generateSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 40, 51);
         findingSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 260);
+
+        start.setPosition(MAZE_WIDTH * TILE_SIZE + 120, 320);
+        end.setPosition(MAZE_WIDTH * TILE_SIZE + 235, 320);
+        start.setType('s');
+        end.setType('e');
     }
 
     void drawText(RenderWindow& window) {
@@ -383,7 +441,10 @@ public:
 
         if (!generating) {
             // here we will draw the find path options
-
+            start.update(window, end.selected);
+            end.update(window, start.selected);
+            start.render(window);
+            end.render(window);
             findingSelect.render(window);
         }
     }
