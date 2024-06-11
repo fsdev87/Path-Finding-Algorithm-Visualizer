@@ -450,15 +450,15 @@ public:
     }
 
 	void control(RenderWindow& window) {
-        //generating = maze.draw(window); // uncomment this line for conditional rendering
         char selection;
-        /*if (generating) selection = 'x';
+        if (generating) selection = 'x';
         else {
+            selection = 's' * start.selected + 'e' * end.selected;
+        }
 
-        }*/
-
-        selection = 's' * start.selected + 'e' * end.selected;
-        maze.draw(window, selection);
+        generating = maze.draw(window, selection); // uncomment this line for conditional rendering
+        
+        //maze.draw(window, selection);
 
         if (generateSelect.selected) {
             if (Keyboard::isKeyPressed(Keyboard::Up)) {
