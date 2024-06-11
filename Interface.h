@@ -153,6 +153,14 @@ void generateHandler(Maze& maze, pair<int, int>& choice) {
     maze.setChoiceGenerate(choice.first * 2 + choice.second + 1);
 }
 
+void resetHandlerPath(Maze& maze) {
+    maze.resetPath();
+}
+
+void findHandler(Maze& maze, pair<int, int>& choice) {
+    maze.setChoicePath(choice.first * 2 + choice.second + 1);
+}
+
 void resetHandler(Maze& maze) {
     maze.reset();
 }
@@ -269,6 +277,8 @@ private:
 
     Button generate;
     Button resetGenerate;
+    Button find;
+    Button resetFind;
 
     SelectButton generateSelect;
     SelectButton findingSelect;
@@ -339,6 +349,26 @@ public:
         resetGenerate.setHoverColor(Color(150, 150, 150));
         resetGenerate.setClickedColor(Color(0x04, 0xd9, 0xff));
         resetGenerate.setOnClick(resetHandler, ref(maze));
+
+        find.setPosition(MAZE_WIDTH * TILE_SIZE + 20, 440);
+        find.setSize(120, 40);
+        find.setCharacterSize(13);
+        find.setText("Find");
+        find.setFont("ethnocentric.otf");
+        find.setNormalColor(Color(150, 150, 150));
+        find.setHoverColor(Color(150, 150, 150));
+        find.setClickedColor(Color(0x04, 0xd9, 0xff));
+        find.setOnClick(findHandler, ref(maze), ref(pathSelected));
+
+        resetFind.setPosition(MAZE_WIDTH * TILE_SIZE + 160, 440);
+        resetFind.setSize(120, 40);
+        resetFind.setCharacterSize(13);
+        resetFind.setText("Reset");
+        resetFind.setFont("ethnocentric.otf");
+        resetFind.setNormalColor(Color(150, 150, 150));
+        resetFind.setHoverColor(Color(150, 150, 150));
+        resetFind.setClickedColor(Color(0x04, 0xd9, 0xff));
+        resetFind.setOnClick(resetHandlerPath, ref(maze));
 
         generateSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 40, 51);
         findingSelect.setPosition(MAZE_WIDTH * TILE_SIZE + 15, 260);
@@ -446,6 +476,11 @@ public:
             start.render(window);
             end.render(window);
             findingSelect.render(window);
+
+            find.update(window);
+            find.render(window);
+            resetFind.update(window);
+            resetFind.render(window);
         }
     }
 

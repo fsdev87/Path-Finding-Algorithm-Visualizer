@@ -148,6 +148,26 @@ public:
 		generateChoice = n;
 	}
 
+	void setChoicePath(int n) {
+		pathChoice = n;
+	}
+
+	void resetPath() {
+		pathChoice = 0;
+		for (int i = 0; i < layout.size(); i++) {
+			for (int j = 0; j < layout[0].size(); j++) {
+				char cellVal = layout[i][j];
+				string check = "CFPSER";
+				for (char ch : check) {
+					if (cellVal == ch) {
+						layout[i][j] = ' ';
+						break;
+					}
+				}
+			}
+		}
+	}
+
 	void reset() {
 		start = { 0, 0 };
 		end = { 0, 0 };
@@ -199,7 +219,7 @@ public:
 				status = false;
 				if (start.first != 0 && start.second != 0) layout[start.first][start.second] = 'S';
 				if (end.first != 0 && end.second != 0) layout[end.first][end.second] = 'E';
-				if (pathChoice != 0) findPath(pathChoice);
+				if (pathChoice && start.first && start.second && end.first && end.second) findPath(pathChoice);
 			}
 		}
 		else reset();
@@ -215,7 +235,6 @@ public:
 			}
 		}
 
-		
 		updateOnClick(window, selection);
 
 		maze[start.first][start.second].type = start.first == 0 ? maze[start.first][start.second].type : Start;
