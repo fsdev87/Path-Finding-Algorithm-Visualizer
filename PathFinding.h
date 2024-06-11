@@ -30,9 +30,16 @@ namespace PathFindingAlgorithms {
 			aStar.findPath(maze, start, end);
 		}
 
+		void reset() {
+			dfs.reset();
+			bfs.reset();
+			dijkstra.reset();
+			aStar.reset();
+		}
 
 	private:
 		class DFS {
+
 		private:
 			struct Cell {
 				int i, j;
@@ -107,6 +114,15 @@ namespace PathFindingAlgorithms {
 		public:
 			DFS() {
 				initialized = false;
+			}
+
+			void reset() {
+				initialized = false;
+				parentMap.clear();
+				while (!st.empty()) {
+					st.pop();
+				}
+				path.clear();
 			}
 
 			void findPath(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
@@ -221,6 +237,18 @@ namespace PathFindingAlgorithms {
 				initialized = false;
 			}
 
+			void reset() {
+				initialized = false;
+				while (!q.empty()) q.pop();
+				path.clear();
+				for (int i = 0; i < MAZE_HEIGHT; i++) {
+					for (int j = 0; j < MAZE_WIDTH; j++) {
+						visited[i][j] = false;
+					}
+				}
+				parentMap.clear();
+			}
+
 			void findPath(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
 				if (!initialized) initialize(start, end);
 				if (q.empty()) {
@@ -285,6 +313,7 @@ namespace PathFindingAlgorithms {
 			map<Cell, Cell> parentMap;
 			map<Cell, int> distances;
 
+
 			bool isValid(Cell& cell) {
 				return cell.i >= 1 && cell.i < (MAZE_HEIGHT - 1)
 					&& cell.j >= 1 && cell.j < (MAZE_WIDTH - 1);
@@ -344,6 +373,14 @@ namespace PathFindingAlgorithms {
 		public:
 			Dijkstra() {
 				initialized = false;
+			}
+
+			void reset() {
+				initialized = false;
+				while (!pq.empty()) pq.pop();
+				path.clear();
+				parentMap.clear();
+				distances.clear();
 			}
 
 			void findPath(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
@@ -471,6 +508,14 @@ namespace PathFindingAlgorithms {
 		public:
 			AStar() {
 				initialized = false;
+			}
+
+			void reset() {
+				initialized = false;
+				path.clear();
+				parentMap.clear();
+				openList.clear();
+				closedList.clear();
 			}
 
 			void findPath(vector<vector<char>>& maze, pair<int, int> start, pair<int, int> end) {
