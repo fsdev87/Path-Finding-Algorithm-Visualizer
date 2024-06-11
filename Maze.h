@@ -154,6 +154,7 @@ public:
 
 	void resetPath() {
 		pathChoice = 0;
+		finders.reset();
 		for (int i = 0; i < layout.size(); i++) {
 			for (int j = 0; j < layout[0].size(); j++) {
 				char cellVal = layout[i][j];
