@@ -149,7 +149,7 @@ public:
 	}
 
 	void setChoicePath(int n) {
-		pathChoice = n;
+		if (start.first && start.second && end.first && end.second) pathChoice = n;
 	}
 
 	void resetPath() {
