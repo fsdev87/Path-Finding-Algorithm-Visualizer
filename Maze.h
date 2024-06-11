@@ -22,17 +22,12 @@ enum Tile {
 
 struct Node {
 	Tile type;
+	RectangleShape outer, inner;
 	// add more
 
 	Node(Tile type = Wall) : type(type) {}
 
-	// functions here
-	void draw(RenderWindow& window, int xPos, int yPos) {
-		RectangleShape outer, inner;
-		outer.setFillColor(Color(0x0e, 0x19, 0x1f));
-		outer.setSize(Vector2f(TILE_SIZE, TILE_SIZE));
-		outer.setPosition(xPos * TILE_SIZE, yPos * TILE_SIZE);
-
+	void setColors() {
 		if (type == Wall) {
 			inner.setFillColor(Color(0x00, 0x99, 0x99));
 		}
@@ -51,11 +46,21 @@ struct Node {
 		else if (type == Path) {
 			inner.setFillColor(Color::Blue);
 		}
+	}
+
+	void update(int xPos, int yPos) {
+		outer.setFillColor(Color(0x0e, 0x19, 0x1f));
+		outer.setSize(Vector2f(TILE_SIZE, TILE_SIZE));
+		outer.setPosition(xPos * TILE_SIZE, yPos * TILE_SIZE);
+
+		
 
 		inner.setSize(Vector2f(TILE_SIZE - 2, TILE_SIZE - 2));
 		inner.setPosition(outer.getPosition().x + 2, outer.getPosition().y + 2);
+	}
 
-
+	// functions here
+	void render(RenderWindow& window) {
 		window.draw(outer);
 		window.draw(inner);
 	}
@@ -161,7 +166,33 @@ public:
 		}
 	}
 
-	bool draw(RenderWindow& window) {
+	void updateOnClick(RenderWindow& window, char selection) {
+		for (int i = 0; i < maze.size(); i++) {
+			for (int j = 0; j < maze[0].size(); j++) {
+				Vector2i mousePos = Mouse::getPosition(window);
+				FloatRect buttonBounds = maze[i][j].outer.getGlobalBounds();
+
+				if (buttonBounds.contains(static_cast<Vector2f>(mousePos))) {
+					if (Mouse::isButtonPressed(Mouse::Left)) {
+						if (maze[i][j].type != Wall) {
+							if (selection == 's') {
+								
+								start = { i, j };
+								break;
+							}
+							else if (selection == 'e') {
+								
+								end = { i, j };
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	bool draw(RenderWindow& window, char selection) {
 		bool status = true;
 		if (generateChoice != 0) {
 			if (generateMaze(generateChoice)) {
@@ -172,12 +203,29 @@ public:
 			}
 		}
 		else reset();
-
+		
 		maze = convertMaze();
 
 		for (int i = 0; i < maze.size(); i++) {
 			for (int j = 0; j < maze[0].size(); j++) {
-				maze[i][j].draw(window, j, i);
+				maze[i][j].update(j, i);
+				if (maze[i][j].type == Start || maze[i][j].type == End) {
+					maze[i][j].type = Cell;
+				}
+			}
+		}
+
+		
+		updateOnClick(window, selection);
+
+		maze[start.first][start.second].type = start.first == 0 ? maze[start.first][start.second].type : Start;
+		maze[end.first][end.second].type = end.first == 0 ? maze[end.first][end.second].type : End;
+
+		
+		for (int i = 0; i < maze.size(); i++) {
+			for (int j = 0; j < maze[0].size(); j++) {
+				maze[i][j].setColors();
+				maze[i][j].render(window);
 			}
 		}
 
